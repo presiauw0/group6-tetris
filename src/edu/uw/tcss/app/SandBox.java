@@ -17,6 +17,10 @@ public final class SandBox {
      * Logger object for logging info and issues with this code.
      */
     public static final Logger LOGGER = Logger.getLogger(SandBox.class.getName());
+    /**
+     * New line field for use in logging
+     */
+    private static final String NEWLINE = "\n";
 
     private SandBox() {
         super();
@@ -35,20 +39,27 @@ public final class SandBox {
     public static void main(final String[] theArgs) {
         final Board b = new Board();
         b.newGame();
-        System.out.println(b);
+        //System.out.println(b);
+        LOGGER.info(NEWLINE + b);
 
         b.step();
-        System.out.println(b);
+        //System.out.println(b);
+        LOGGER.info(NEWLINE + b);
         b.rotateCW();
-        System.out.println(b);
+        //System.out.println(b);
+        LOGGER.info(NEWLINE + b);
         b.rotateCW();
-        System.out.println(b);
+        //System.out.println(b);
+        LOGGER.info(NEWLINE + b);
         b.rotateCW();
-        System.out.println(b);
+        //System.out.println(b);
+        LOGGER.info(NEWLINE + b);
         b.rotateCW();
-        System.out.println(b);
+        //System.out.println(b);
+        LOGGER.info(NEWLINE + b);
         b.drop();
-        System.out.println(b);
+        //System.out.println(b);
+        LOGGER.info(NEWLINE + b);
 
     }
 

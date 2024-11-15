@@ -15,10 +15,10 @@ Group 6 Members:
 Link to Google Doc on Meeting Notes for Sprint 0:
 https://docs.google.com/document/d/1G0hNd6BlmNTyfMC1TWxJMaIVKSBLcyC-dv-69-_FAz0/edit?usp=sharing
 
-Preston completed the logger for the sandbox to replace the System.Out.Print statements.
-Balkirat created the MyBoard interface for Board.
-AbdulRahman created the MyPoint interface for Point
-Khalid created the MyMovableTetrisPeice interface for MovableTetrisPeice.
+- Preston completed the logger for the sandbox to replace the System.Out.Print statements.
+- Balkirat created the MyBoard interface for Board.
+- AbdulRahman created the MyPoint interface for Point.
+- Khalid created the MyMovableTetrisPeice interface for MovableTetrisPeice.
 
 We ran into a few issues regarding how to view changes committed by others in our local IDE,
 we got together as a group and managed to work out how to go about committing changes and 

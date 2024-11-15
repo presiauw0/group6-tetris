@@ -3,7 +3,7 @@ package model;
 /**
  * The interface represents a TetrisPiece with a position and a rotation.
  * The interface has methods to retrieve a TetrisPiece, it position, its rotation,
- * and the BoardPoints, coordinates on the board.
+ * and the BoardPoints which represents coordinates on the board.
  * The interface has methods to rotate and move the TetrisPiece, and set its position.
  *
  * @author ksrashid

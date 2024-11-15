@@ -9,7 +9,7 @@ import java.util.List;
  * reset the board for a new game,
  * set a non-random sequence of Tetris pieces, and control piece movement.
  *
- * @author Balkirat Singh, Abdulrahman Hassan, Khalid Rashid, Preston Sia
+ * @author Balkirat Singh
  * @version Autumn 2024
  */
 

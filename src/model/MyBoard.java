@@ -5,11 +5,12 @@ import java.util.List;
 /**
  * Represents the operations supported by a Tetris game board.
  * This interface defines the public methods that the Board class must implement.
- * The Board interface allows clients to retrieve board dimensions, reset the board for a new game,
+ * The Board interface allows clients to retrieve board dimensions,
+ * reset the board for a new game,
  * set a non-random sequence of Tetris pieces, and control piece movement.
  *
- * @author Your Name
- * @version Autumn 2023
+ * @author Balkirat Singh, Abdulrahman Hassan, Khalid Rashid, Preston Sia
+ * @version Autumn 2024
  */
 
 public interface MyBoard {

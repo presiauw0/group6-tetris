@@ -30,7 +30,7 @@ public interface MyPoint {
      * @param theX the new x-coordinate of the point.
      * @param theY the new y-coordinate of the point.
      */
-    void transform(int theX, int theY);
+    Point transform(int theX, int theY);
 
     /**
      * Transforms the point to the position of another MyPoint object.

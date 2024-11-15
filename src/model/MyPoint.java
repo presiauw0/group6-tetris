@@ -29,8 +29,17 @@ public interface MyPoint {
      *
      * @param theX the new x-coordinate of the point.
      * @param theY the new y-coordinate of the point.
+     * @return the updated Point object, with the new coordinates.
      */
     Point transform(int theX, int theY);
+    /**
+     * Transforms the point to the position of another Point object.
+     * This method updates the current point's coordinates to match those of the given Point.
+     *
+     * @param thePoint the Point object whose coordinates will be copied.
+     * @return the updated Point object, with the coordinates from the provided Point.
+     */
+    Point transform(Point thePoint);
 
     /**
      * Transforms the point to the position of another MyPoint object.

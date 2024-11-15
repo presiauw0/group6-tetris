@@ -80,6 +80,7 @@ public final class Point implements MyPoint {
      * @param thePoint the Point to transform with.
      * @return the new transformed Point.
      */
+    @Override
     public Point transform(final Point thePoint) {
         return transform(thePoint.x(), thePoint.y());
     }

@@ -69,11 +69,6 @@ public final class Point implements MyPoint {
         return new Point(myX + theX, myY + theY);
     }
 
-    @Override
-    public void transform(final MyPoint thePoint) {
-
-    }
-
     /**
      * Creates a new point transformed by another Point.
      * 

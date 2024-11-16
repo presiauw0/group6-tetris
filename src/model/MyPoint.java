@@ -41,10 +41,4 @@ public interface MyPoint {
      */
     Point transform(Point thePoint);
 
-    /**
-     * Transforms the point to the position of another MyPoint object.
-     *
-     * @param thePoint the MyPoint object whose coordinates will be copied.
-     */
-    void transform(MyPoint thePoint);
 }

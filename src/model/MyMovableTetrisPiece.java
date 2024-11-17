@@ -15,7 +15,7 @@ package model;
  * @author Alan Fowler
  * @version 1.3
  */
-public final class MovableTetrisPiece {
+public final class MyMovableTetrisPiece {
     
     /**
      * The number of Points in a TetrisPiece.
@@ -45,7 +45,7 @@ public final class MovableTetrisPiece {
      * @param theTetrisPiece the type of TetrisPiece.
      * @param thePosition the position on the Board.
      */
-    public MovableTetrisPiece(final TetrisPiece theTetrisPiece,
+    public MyMovableTetrisPiece(final TetrisPiece theTetrisPiece,
                               final Point thePosition) {
         
         this(theTetrisPiece, thePosition, Rotation.NONE);
@@ -59,7 +59,7 @@ public final class MovableTetrisPiece {
      * @param thePosition the position on the Board.
      * @param theRotation the initial angle of the TetrisPiece.
      */
-    public MovableTetrisPiece(final TetrisPiece theTetrisPiece,
+    public MyMovableTetrisPiece(final TetrisPiece theTetrisPiece,
                               final Point thePosition, 
                               final Rotation theRotation) {
         super();

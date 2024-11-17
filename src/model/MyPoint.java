@@ -16,7 +16,7 @@ import java.util.Objects;
  * @author Alan Fowler
  * @version 1.2
  */
-public final class Point {
+public final class MyPoint {
 
     /** The X coordinate. */
     private final int myX;
@@ -30,7 +30,7 @@ public final class Point {
      * @param theX the X coordinate.
      * @param theY the Y coordinate.
      */
-    public Point(final int theX, final int theY) {
+    public MyPoint(final int theX, final int theY) {
         super();
         myX = theX;
         myY = theY;

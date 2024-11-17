@@ -33,7 +33,7 @@ import model.wallkicks.WallKick;
  * @author Alan Fowler
  * @version 1.3
  */
-public class Board {
+public class MyBoard {
 
     // Class constants
     
@@ -103,7 +103,7 @@ public class Board {
      * Default Tetris board constructor.
      * Creates a standard size tetris game board.
      */
-    public Board() {
+    public MyBoard() {
         this(DEFAULT_WIDTH, DEFAULT_HEIGHT);
     }
 
@@ -113,7 +113,7 @@ public class Board {
      * @param theWidth Width of the Tetris game board.
      * @param theHeight Height of the Tetris game board.
      */
-    public Board(final int theWidth, final int theHeight) {
+    public MyBoard(final int theWidth, final int theHeight) {
         super();
         myWidth = theWidth;
         myHeight = theHeight;

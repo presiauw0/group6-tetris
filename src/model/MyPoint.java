@@ -1,102 +1,43 @@
-/*
- * TCSS 305
- * 
- * An implementation of the classic game "Tetris".
- */
-
 package model;
-
-import java.util.Objects;
-
 /**
- * Represents a 2D Point with x and y coordinates.
- * Point objects are immutable.
- * (Compare to java.awt.Point which are mutable)
- * 
- * @author Alan Fowler
- * @version 1.2
+ * Interface representing a 2D point with integer coordinates.
+ * Provides methods to retrieve the coordinates of the point
+ * and transform the point's position.
+ *
+ * @author Abdulrahman Hassan
+ * @version Autumn 2024
+ *
  */
-public final class MyPoint {
-
-    /** The X coordinate. */
-    private final int myX;
-
-    /** The Y coordinate. */
-    private final int myY;
+public interface MyPoint {
 
     /**
-     * Constructs a Point using the provided coordinates.
-     * 
-     * @param theX the X coordinate.
-     * @param theY the Y coordinate.
+     * Returns the x-coordinate of the point.
+     *
+     * @return the x-coordinate of the point.
      */
-    public MyPoint(final int theX, final int theY) {
-        super();
-        myX = theX;
-        myY = theY;
-    }
-
-    // Queries
-    /**
-     * Returns the X coordinate.
-     * 
-     * @return the X coordinate of the Point.
-     */
-    public int x() {
-        return myX;
-    }
+    int x();
 
     /**
-     * Returns the Y coordinate.
-     * 
-     * @return the Y coordinate of the Point.
+     * Returns the y-coordinate of the point.
+     *
+     * @return the y-coordinate of the point.
      */
-    public int y() {
-        return myY;
-    }
+    int y();
 
     /**
-     * Creates a new point transformed by x and y.
-     * 
-     * @param theX the X factor to transform by.
-     * @param theY the Y factor to transform by.
-     * @return the new transformed Point.
+     * Transforms the point to a new position specified by the given x and y coordinates.
+     *
+     * @param theX the new x-coordinate of the point.
+     * @param theY the new y-coordinate of the point.
+     * @return the updated Point object, with the new coordinates.
      */
-    public Point transform(final int theX, final int theY) {
-        return new Point(myX + theX, myY + theY);
-    }
-    
+    Point transform(int theX, int theY);
     /**
-     * Creates a new point transformed by another Point.
-     * 
-     * @param thePoint the Point to transform with.
-     * @return the new transformed Point.
+     * Transforms the point to the position of another Point object.
+     * This method updates the current point's coordinates to match those of the given Point.
+     *
+     * @param thePoint the Point object whose coordinates will be copied.
+     * @return the updated Point object, with the coordinates from the provided Point.
      */
-    public Point transform(final Point thePoint) {
-        return transform(thePoint.x(), thePoint.y());
-    }
-
-    // overridden methods of class Object
-
-    @Override
-    public boolean equals(final Object theOther) {
-        boolean result = false;
-        if (theOther == this) {
-            result = true;
-        } else if (theOther != null && theOther.getClass() == getClass()) {
-            final Point p = (Point) theOther;
-            result = myX == p.myX && myY == p.myY;
-        }
-        return result;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(myX, myY);
-    }
-
-    @Override
-    public String toString() {
-        return String.format("(%d, %d)", myX, myY);
-    }
+    Point transform(Point thePoint);
 }

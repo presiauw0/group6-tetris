@@ -3,6 +3,7 @@ package edu.uw.tcss.app;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Board;
+import model.MyBoard;
 
 
 /**
@@ -37,7 +38,7 @@ public final class SandBox {
      * @param theArgs Argument from the command line.
      */
     public static void main(final String[] theArgs) {
-        final Board b = new Board();
+        final Board b = new MyBoard();
         b.newGame();
         //System.out.println(b);
         LOGGER.info(NEWLINE + b);

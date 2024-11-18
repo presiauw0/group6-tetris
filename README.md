@@ -1,4 +1,4 @@
-# TCSS305-Group-Project
+# TCSS305-Group6-Tetris
 
 TCSS 305 Tetris
 

@@ -16,7 +16,7 @@ import java.util.Objects;
  * @author Alan Fowler
  * @version 1.2
  */
-public final class Point {
+public final class Point implements MyPoint {
 
     /** The X coordinate. */
     private final int myX;
@@ -42,6 +42,7 @@ public final class Point {
      * 
      * @return the X coordinate of the Point.
      */
+    @Override
     public int x() {
         return myX;
     }
@@ -51,27 +52,30 @@ public final class Point {
      * 
      * @return the Y coordinate of the Point.
      */
+    @Override
     public int y() {
         return myY;
     }
 
     /**
      * Creates a new point transformed by x and y.
-     * 
+     *
      * @param theX the X factor to transform by.
      * @param theY the Y factor to transform by.
      * @return the new transformed Point.
      */
+    @Override
     public Point transform(final int theX, final int theY) {
         return new Point(myX + theX, myY + theY);
     }
-    
+
     /**
      * Creates a new point transformed by another Point.
      * 
      * @param thePoint the Point to transform with.
      * @return the new transformed Point.
      */
+    @Override
     public Point transform(final Point thePoint) {
         return transform(thePoint.x(), thePoint.y());
     }

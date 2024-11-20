@@ -20,8 +20,15 @@ public final class TetrisGUI extends JPanel {
      */
     public TetrisGUI(final String theTitle) {
         super();
+        buildComponents();
         layoutComponents();
 
+    }
+
+    /**
+     * get the other classes into the regions they belong (THIS IS INCOMPLETE)
+     */
+    private void buildComponents() {
     }
 
     /**

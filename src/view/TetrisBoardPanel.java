@@ -28,19 +28,21 @@ import view.colors.TetrisColorSchemeDefault;
  */
 public class TetrisBoardPanel extends JPanel {
     /**
-     * Default width of the panel.
+     * Default multiple for the width of the panel.
+     * Multiply the block side length by this amount.
      */
-    public static final int DEFAULT_WIDTH = 200;
+    public static final int DEFAULT_BOARD_WIDTH = 10;
 
     /**
-     * Default height of the panel.
+     * Default multiple for the height of the panel.
+     * Multiply the block side length by this amount.
      */
-    public static final int DEFAULT_HEIGHT = 400;
+    public static final int DEFAULT_BOARD_HEIGHT = 20;
 
     /**
-     * Default block side length.
+     * Default block side length in pixels.
      */
-    public static final int BLOCK_WIDTH = 20;
+    public static final int DEFAULT_BLOCK_WIDTH = 20;
 
     /**
      * Default stroke/border width.
@@ -54,7 +56,22 @@ public class TetrisBoardPanel extends JPanel {
 
 
     /**
-     * Store a list of Tetris pieces to draw
+     * Side length of the individual blocks in pixels.
+     */
+    private final int myBlockWidthPX;
+
+    /**
+     * Width of the board in Tetris blocks.
+     */
+    private final int myBoardWidth;
+
+    /**
+     * Height of the board in Tetris blocks.
+     */
+    private final int myBoardHeight;
+
+    /**
+     * Store a list of Tetris pieces to draw.
      */
     private final List<MyMovableTetrisPiece> myTetrisPieces;
 
@@ -63,12 +80,42 @@ public class TetrisBoardPanel extends JPanel {
      */
     private final TetrisColorScheme myColorScheme;
 
+
     /**
-     * Configures dimensions, colors, and other attributes
-     * related to the Tetris board.
+     * Constructor to configure the Tetris board
+     * using the defaults specified in the static fields.
      */
     public TetrisBoardPanel() {
+        this(DEFAULT_BLOCK_WIDTH, DEFAULT_BOARD_WIDTH, DEFAULT_BOARD_HEIGHT);
+    }
+
+    /**
+     * Constructor to configure the Tetris board
+     * with just the block length. Defaults specified
+     * above will be used for block length and width.
+     *
+     * @param theBlockLengthPX Length of a block in pixels
+     */
+    public TetrisBoardPanel(final int theBlockLengthPX) {
+        this(theBlockLengthPX, DEFAULT_BOARD_WIDTH, DEFAULT_BOARD_HEIGHT);
+    }
+
+    /**
+     * Constructor to configure dimensions and other attributes
+     * related to the Tetris board. Takes the length and width
+     * of the board, and the side length of a block in pixels.
+     *
+     * @param theBlockLengthPX Length of a block in pixels
+     * @param theBoardWidth Width of the board in blocks
+     * @param theBoardHeight Height of the board in blocks
+     */
+    public TetrisBoardPanel(final int theBlockLengthPX,
+                            final int theBoardWidth, final int theBoardHeight) {
         super();
+
+        myBlockWidthPX = theBlockLengthPX;
+        myBoardWidth = theBoardWidth;
+        myBoardHeight = theBoardHeight;
 
         myColorScheme = new TetrisColorSchemeDefault();
         myTetrisPieces = new ArrayList<>();
@@ -82,7 +129,8 @@ public class TetrisBoardPanel extends JPanel {
      */
     private void layoutComponents() {
         setBackground(DEFAULT_BG_COLOR);
-        setPreferredSize(new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT));
+        setPreferredSize(new Dimension(myBlockWidthPX * myBoardWidth,
+                myBlockWidthPX * myBoardHeight));
     }
 
     @Override
@@ -100,11 +148,11 @@ public class TetrisBoardPanel extends JPanel {
             final Point[] piecePoints = piece.getBoardPoints();
 
             for (final Point block : piecePoints) {
-                final int xCoord = block.x() * BLOCK_WIDTH;
-                final int yCoord = block.y() * BLOCK_WIDTH;
+                final int xCoord = block.x() * myBlockWidthPX;
+                final int yCoord = block.y() * myBlockWidthPX;
 
                 final Shape rect = new Rectangle2D.Double(
-                        xCoord, yCoord, BLOCK_WIDTH, BLOCK_WIDTH
+                        xCoord, yCoord, myBlockWidthPX, myBlockWidthPX
                 );
 
                 g2d.setStroke(new BasicStroke(DEFAULT_STROKE));
@@ -128,20 +176,23 @@ public class TetrisBoardPanel extends JPanel {
             TetrisPiece.Z
         };
 
-        final int boardWidth = DEFAULT_WIDTH / BLOCK_WIDTH;
-        final int boardHeight = DEFAULT_HEIGHT / BLOCK_WIDTH;
         // make a static constant?
         final int pieceOffset = 3;
 
         for (int i = 0; i < pieces.length; i++) {
-            final int centerPosition =
-                    (boardWidth / 2) - (int) Math.ceil(pieces[i].getWidth() / 2.0);
-
             myTetrisPieces.add(new MovableTetrisPiece(
                     pieces[i],
-                    new Point(centerPosition, boardHeight - pieceOffset - (i * pieceOffset))
+                    new Point(i, myBoardHeight - pieceOffset - (i * pieceOffset))
             ));
         }
+    }
+
+    /**
+     * Get the offset used to horizontally center a Tetris piece.
+     * @return The x-coordinate in blocks
+     */
+    private int getHorizontalCenterOffset(final TetrisPiece thePiece) {
+        return (myBoardWidth / 2) - (int) Math.ceil(thePiece.getWidth() / 2.0);
     }
 
 
@@ -153,7 +204,7 @@ public class TetrisBoardPanel extends JPanel {
     public static void generateGui() {
         final TetrisBoardPanel mainPanel = new TetrisBoardPanel();
 
-        final JFrame window = new JFrame("Test Tetrie Board Panel");
+        final JFrame window = new JFrame("Test Tetris Board Panel");
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.setContentPane(mainPanel);
         window.pack();

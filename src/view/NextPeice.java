@@ -1,15 +1,20 @@
 package view;
 
+
+import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.Shape;
+import java.awt.geom.Rectangle2D;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import model.Point;
 import model.TetrisPiece;
-
+import view.colors.TetrisColorScheme;
+import view.colors.TetrisColorSchemeDefault;
 
 
 /**
@@ -20,8 +25,11 @@ import model.TetrisPiece;
  */
 public class NextPeice extends JPanel {
 
-    /** Size of a single block */
+    /** Size of a single block in pixels. */
     private static final int BLOCK_SIZE = 20;
+
+    /** Default stroke/border width. */
+    private static final int DEFAULT_STROKE = 2;
 
     /** The width of the panel. */
     private static final int WIDTH = 200;
@@ -31,6 +39,10 @@ public class NextPeice extends JPanel {
 
     /** instantiates the next tetris piece. */
     private final TetrisPiece myNextPiece;
+    /**
+     * Store a color scheme to use for the Tetrominos
+     */
+    private final TetrisColorScheme myColorScheme;
 
     /**
      * This lay's out the components.
@@ -39,6 +51,7 @@ public class NextPeice extends JPanel {
     public NextPeice() {
         super();
         layoutComponents();
+        myColorScheme = new TetrisColorSchemeDefault();
         // pass in the next test piece instead of T.
         myNextPiece = TetrisPiece.T;
     }
@@ -49,7 +62,6 @@ public class NextPeice extends JPanel {
     private void layoutComponents() {
         setLayout(new BorderLayout());
         setBackground(Color.RED);
-
 //        setPreferredSize(new Dimension(WIDTH, HEIGHT));
     }
 
@@ -66,42 +78,29 @@ public class NextPeice extends JPanel {
         final Graphics2D g2d = (Graphics2D) theGraphics;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
-
         final Point[] points = myNextPiece.getPoints();
-        final Color blockColor = getBlockColor();
-        g2d.setPaint(blockColor);
+        final Color blockColor = myColorScheme.getColor(myNextPiece);
 
-        final int blockSize = BLOCK_SIZE;
-
-
-        final int pieceWidth = myNextPiece.getWidth() * blockSize;
-        final int pieceHeight = myNextPiece.getHeight() * blockSize;
-        //final int pieceHeight = (myNextPiece.getHeight() + 2)  * blockSize;
-
+        final int pieceWidth = myNextPiece.getWidth() * BLOCK_SIZE;
+        final int pieceHeight = myNextPiece.getHeight() * BLOCK_SIZE;
         final int sideWidth = (getWidth() - pieceWidth) / 2;
         final int sideHeight = (getHeight() + pieceHeight) / 2;
 
         for (final Point point : points) {
-            final int xCoordinates = sideWidth + point.x() * blockSize;
-            int yCoordinates = sideHeight - point.y() * blockSize;
+            final int xCoordinates = sideWidth + point.x() * BLOCK_SIZE;
+            int yCoordinates = sideHeight - point.y() * BLOCK_SIZE;
             if (myNextPiece == TetrisPiece.I) {
-                yCoordinates += blockSize;
+                yCoordinates += BLOCK_SIZE;
             }
-            g2d.fillRect(xCoordinates, yCoordinates, blockSize, blockSize);
-        }
-    }
-    /**
-     * Assign a color for each of the Tetris piece.
-     *  returns the color of the tetris peice
-     * @return the color of the Tetris piece
-     */
-    private Color getBlockColor() {
 
-        Color result = null;
-        if (myNextPiece == TetrisPiece.J) {
-            result = Color.BLACK;
+            final Shape rect = new Rectangle2D.Double(
+                    xCoordinates, yCoordinates, BLOCK_SIZE, BLOCK_SIZE);
+            g2d.setStroke(new BasicStroke(DEFAULT_STROKE));
+            g2d.setPaint(blockColor);
+            g2d.fillRect(xCoordinates, yCoordinates, BLOCK_SIZE, BLOCK_SIZE);
+            g2d.setPaint(TetrisColorSchemeDefault.BORDER_COLOR);
+            g2d.draw(rect);
         }
-        return result;
     }
 
     /** Creates and displays the GUI. */

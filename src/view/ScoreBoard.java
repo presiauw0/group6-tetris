@@ -1,6 +1,6 @@
 package view;
 
-import java.awt.BorderLayout;
+
 import java.awt.Color;
 import java.awt.GridLayout;
 import javax.swing.BorderFactory;
@@ -47,13 +47,13 @@ public class ScoreBoard extends JPanel {
     private void initialize() {
         setBackground(Color.GREEN);
 
-        setLayout(new BorderLayout());
+        setLayout(new GridLayout(2, 1));
 
         final JPanel controlsPanel = createControlsPanel();
-        add(controlsPanel, BorderLayout.NORTH);
-
         final JPanel scorePanel = createScorePanel();
-        add(scorePanel, BorderLayout.CENTER);
+
+        add(controlsPanel);
+        add(scorePanel);
     }
 
     /**

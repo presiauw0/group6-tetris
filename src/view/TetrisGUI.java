@@ -64,16 +64,6 @@ public final class TetrisGUI extends JPanel {
         gameMenu.addSeparator();
         gameMenu.add(exitItem);
 
-        final JMenu optionsMenu = new JMenu("Options");
-        final JMenuItem difficultyItem = new JMenuItem("Difficulty");
-        final JMenuItem controlsItem = new JMenuItem("Controls");
-
-        difficultyItem.addActionListener(e -> showDifficultyDialog());
-        controlsItem.addActionListener(e -> showControlsDialog());
-
-        optionsMenu.add(difficultyItem);
-        optionsMenu.add(controlsItem);
-
         final JMenu helpMenu = new JMenu("Help");
         final JMenuItem howToPlayItem = new JMenuItem("How to Play");
         final JMenuItem aboutItem = new JMenuItem("About");
@@ -90,7 +80,6 @@ public final class TetrisGUI extends JPanel {
         helpMenu.add(aboutItem);
 
         menuBar.add(gameMenu);
-        menuBar.add(optionsMenu);
         menuBar.add(helpMenu);
 
         myFrame.setJMenuBar(menuBar);
@@ -130,37 +119,6 @@ public final class TetrisGUI extends JPanel {
      */
     private void togglePauseResume() {
         JOptionPane.showMessageDialog(myFrame, "Toggling pause/resume!");
-    }
-
-    /**
-     * Displays a dialog to allow the user to select a difficulty level.
-     */
-    private void showDifficultyDialog() {
-        final String[] difficulties = {"Easy", "Medium", "Hard"};
-        final String difficulty = (String) JOptionPane.showInputDialog(
-                myFrame,
-                "Select difficulty level:",
-                "Difficulty",
-                JOptionPane.QUESTION_MESSAGE,
-                null,
-                difficulties,
-                difficulties[0]
-        );
-        if (difficulty != null) {
-            JOptionPane.showMessageDialog(myFrame, "Difficulty set to: " + difficulty);
-        }
-    }
-
-    /**
-     * Displays a dialog showing the game controls to the user.
-     */
-    private void showControlsDialog() {
-        JOptionPane.showMessageDialog(
-                myFrame,
-                "Controls:\n- Arrow keys to move\n- Space to rotate\n- P to pause\n- R to resume",
-                "Controls",
-                JOptionPane.INFORMATION_MESSAGE
-        );
     }
 
     /**

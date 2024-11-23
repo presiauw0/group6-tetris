@@ -61,7 +61,7 @@ public class NextPeice extends JPanel {
      */
     private void layoutComponents() {
         setLayout(new BorderLayout());
-        setBackground(Color.RED);
+        setBackground(Color.BLUE);
 //        setPreferredSize(new Dimension(WIDTH, HEIGHT));
     }
 

@@ -36,7 +36,7 @@ look. These small improvements went a bit beyond the basic requirements and help
 the scoreboard more user friendly while setting it up for future features.
 
 **Abdul**:
-I created the Tetris game GUI in the TetrisGUI class and also a menu bar. The menu includes options for starting a new game, pausing/resuming gameplay, exiting the application, gameplay instructions, and viewing an "About" section. 
+I created the Tetris game GUI in the TetrisGUI class and also a menu bar. The TetrisGUI class combines and displays every other class that was created in one window. The menu bar I created has options for starting a new game, pausing/resuming gameplay, exiting the application, gameplay instructions, and viewing an "About" section. 
 
 **Khalid**:
 

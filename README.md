@@ -13,7 +13,7 @@ Group 6 Members:
 Link to Google Doc on Meeting Notes for Sprint 0:
 https://docs.google.com/document/d/1G0hNd6BlmNTyfMC1TWxJMaIVKSBLcyC-dv-69-_FAz0/edit?usp=sharing
 
-Roles:
+### Sprint Roles:
 
  - Bal - Information panel
  - Abdul - Menu bar and GUI window
@@ -63,7 +63,14 @@ constructors set up so this can be altered if desired for a future feature.
 
 
 #
+### Problems
+One issue we've had was sizing everything correctly. Using border layout
+we ran into issues of having gaps or inconsistent sizing. I think we've
+mitigated these issues for the most part, but we will probably meet
+to discuss refinements to the layout sometime next week.
+
 #
+### Summary of updates
 
 
 

@@ -71,7 +71,17 @@ public final class TetrisGUI extends JPanel {
         howToPlayItem.addActionListener(e -> showHowToPlayDialog());
         aboutItem.addActionListener(e -> JOptionPane.showMessageDialog(
                 myFrame,
-                "Tetris Game v1.0\nCreated with Swing.",
+                """
+                        Tetris Game v1.0
+                        Created with Swing.
+                        
+                        Developed by:
+                        Abdulrahman Hassan
+                        Preston Sia
+                        Khalid Rashid
+                        Balkirat Singh
+                        
+                        Group 6""",
                 "About",
                 JOptionPane.INFORMATION_MESSAGE
         ));
@@ -84,7 +94,6 @@ public final class TetrisGUI extends JPanel {
 
         myFrame.setJMenuBar(menuBar);
     }
-
     /**
      * Lays out the components for the Tetris GUI.
      */
@@ -101,7 +110,6 @@ public final class TetrisGUI extends JPanel {
 
         myFrame.setContentPane(this);
 
-        myFrame.setPreferredSize(new Dimension(400, 488));
         myFrame.pack();
         myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         myFrame.setVisible(true);

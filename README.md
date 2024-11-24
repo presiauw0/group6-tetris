@@ -21,17 +21,23 @@ Roles:
  - Preston - Tetris game board
 
 ### Summary of changes
-Bal:
+**Bal**:
 
 
-Abdul:
+**Abdul**:
 
 
-Khalid:
+**Khalid**:
 
 
-Preston: 
-
+**Preston**: 
+I created the Tetris game board panel, contained in TetrisBoardPanel class.
+This class creates a JPanel with a red background, and draws all 7 Tetris
+pieces across the panel by creating new MovableTetrisPiece objects.
+I also created a color scheme class so that our group can standardize the
+colors we use for our Tetris pieces. Currently the panel is sized
+200x400 pixels for right now with each block being 20x20, though I have
+constructors set up so this can be altered if desired for a future feature.
 
 
 #

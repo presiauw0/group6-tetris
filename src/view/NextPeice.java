@@ -4,12 +4,14 @@ package view;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 import javax.swing.JFrame;
+import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import model.Point;
 import model.TetrisPiece;
@@ -61,8 +63,9 @@ public class NextPeice extends JPanel {
      */
     private void layoutComponents() {
         setLayout(new BorderLayout());
-        setBackground(Color.RED);
-//        setPreferredSize(new Dimension(WIDTH, HEIGHT));
+        setBackground(Color.BLUE);
+   //     setPreferredSize(new Dimension(WIDTH, HEIGHT));
+        setBorder(BorderFactory.createLineBorder(Color.BLACK));
     }
 
     /**
@@ -103,25 +106,25 @@ public class NextPeice extends JPanel {
         }
     }
 
-    /** Creates and displays the GUI. */
-    private static void createAndShowGUI() {
-        final JFrame window = new JFrame("Next Tetris Piece");
-        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        final NextPeice nextPeicePanel = new NextPeice();
-        window.setContentPane(nextPeicePanel);
-
-        window.pack();
-        window.setVisible(true);
-    }
-
-    /**
-     * Create a JFrame to display to the window.
-     *
-     * @param theArgs Command line arguments, ignored.
-     */
-    public static void main(final String[] theArgs) {
-        javax.swing.SwingUtilities.invokeLater(NextPeice::createAndShowGUI);
-    }
+//    /** Creates and displays the GUI. */
+//    private static void createAndShowGUI() {
+//        final JFrame window = new JFrame("Next Tetris Piece");
+//        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//
+//        final NextPeice nextPeicePanel = new NextPeice();
+//        window.setContentPane(nextPeicePanel);
+//
+//        window.pack();
+//        window.setVisible(true);
+//    }
+//
+//    /**
+//     * Create a JFrame to display to the window.
+//     *
+//     * @param theArgs Command line arguments, ignored.
+//     */
+//    public static void main(final String[] theArgs) {
+//        javax.swing.SwingUtilities.invokeLater(NextPeice::createAndShowGUI);
+//    }
 
 }

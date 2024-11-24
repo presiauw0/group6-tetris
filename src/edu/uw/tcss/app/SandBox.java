@@ -55,6 +55,9 @@ public final class SandBox {
         //System.out.println(b);
         LOGGER.info(NEWLINE + b);
         b.rotateCW();
+
+        LOGGER.info("Tetris Piece moved one block down" + NEWLINE + b);
+        b.left();
         //System.out.println(b);
         LOGGER.info(NEWLINE + b);
         b.drop();

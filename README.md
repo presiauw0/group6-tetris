@@ -43,7 +43,14 @@ pausing/resuming gameplay, exiting the application, gameplay instructions, and
 viewing an "About" section. 
 
 **Khalid**:
-
+I created the Next-piece panel. This panel has a blue background and as it stands
+displays the "T" tetromino centered within the panel. The Next-Piece class retrieves
+the Points that represent a piece's position on a grid and creates a Rectangle
+according to those points. I centered these Tetrominos by adjusting the rectangle's
+location in relation to the distance from the x and Y axis. All Tetrimnos except
+the "I" Tetomino are centered using the original format. Due to issues that I 
+encountered when centering the "I" Tetromino, there is a slightly modified code
+to handle this specific case
 
 **Preston**: 
 I created the Tetris game board panel, contained in TetrisBoardPanel class.

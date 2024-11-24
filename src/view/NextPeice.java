@@ -1,13 +1,7 @@
 package view;
 
 
-import java.awt.BasicStroke;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.awt.Shape;
+import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -62,7 +56,7 @@ public class NextPeice extends JPanel {
     private void layoutComponents() {
         setLayout(new BorderLayout());
         setBackground(Color.BLUE);
-//        setPreferredSize(new Dimension(WIDTH, HEIGHT));
+        setPreferredSize(new Dimension(WIDTH, HEIGHT));
     }
 
     /**

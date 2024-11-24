@@ -22,7 +22,18 @@ Roles:
 
 ### Summary of changes
 **Bal**:
-
+For Sprint 1, the main task was to create the ScoreBoard class and make sure
+the background was green. One issue that came up during testing was that the
+green background wasn’t showing because the panels layered on top of it had a
+different color. To fix this, the panels were set to be opaque so the background
+could show through. Initially, a BorderLayout was used to organize the controls 
+and score panels, but it didn’t scale well when resizing the window. Switching to
+a GridLayout solved this problem by keeping the layout proportional, no matter the
+window size. To make the scoreboard more useful and more aesthetic, placeholder text
+was added for the score and level, and also added text instructions for the game 
+controls. The text was centered within the panels to give it a cleaner and more polished
+look. These small improvements went a bit beyond the basic requirements and helped make
+the scoreboard more user friendly while setting it up for future features.
 
 **Abdul**:
 

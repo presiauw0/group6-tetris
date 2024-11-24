@@ -22,7 +22,7 @@ Roles:
 
 ### Summary of changes
 **Bal**:
-For Sprint 1, the main task was to create the ScoreBoard class and make sure
+For Sprint 1, my main task was to create the ScoreBoard class and make sure
 the background was green. One issue that came up during testing was that the
 green background wasn’t showing because the panels layered on top of it had a
 different color. To fix this, the panels were set to be opaque so the background

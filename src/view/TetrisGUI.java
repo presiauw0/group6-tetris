@@ -1,10 +1,12 @@
 package view;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.BorderLayout;
-import java.awt.Dimension;
-import javax.swing.*;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 /**
  * The graphical user interface for the Tetris game.
@@ -94,6 +96,8 @@ public final class TetrisGUI extends JPanel {
 
         myFrame.setJMenuBar(menuBar);
     }
+
+
     /**
      * Lays out the components for the Tetris GUI.
      */
@@ -104,7 +108,7 @@ public final class TetrisGUI extends JPanel {
 
         final JPanel rightPanel = new JPanel(new BorderLayout());
         rightPanel.add(myNextPeicePanel, BorderLayout.NORTH);
-        rightPanel.add(myScoreBoardPanel, BorderLayout.SOUTH);
+        rightPanel.add(myScoreBoardPanel, BorderLayout.CENTER);
 
         add(rightPanel, BorderLayout.EAST);
 
@@ -156,9 +160,9 @@ public final class TetrisGUI extends JPanel {
     /**
      * Main method to launch the application.
      *
-     * @param args Command line arguments, ignored.
+     * @param theArgs Command line arguments, ignored.
      */
-    public static void main(final String[] args) {
+    public static void main(final String[] theArgs) {
         javax.swing.SwingUtilities.invokeLater(TetrisGUI::createAndShowGUI);
     }
 } 

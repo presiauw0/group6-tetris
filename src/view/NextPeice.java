@@ -1,7 +1,14 @@
 package view;
 
 
-import java.awt.*;
+import java.awt.BasicStroke;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -26,10 +33,10 @@ public class NextPeice extends JPanel {
     private static final int DEFAULT_STROKE = 2;
 
     /** The width of the panel. */
-    private static final int WIDTH = 200;
+    private static final int WIDTH = 150;
 
     /** The height of the panel. */
-    private static final int HEIGHT = 200;
+    private static final int HEIGHT = 150;
 
     /** instantiates the next tetris piece. */
     private final TetrisPiece myNextPiece;

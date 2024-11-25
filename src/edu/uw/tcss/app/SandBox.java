@@ -1,8 +1,11 @@
 package edu.uw.tcss.app;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import model.Board;
+import model.TetrisPiece;
 
 
 /**
@@ -50,6 +53,9 @@ public final class SandBox {
      */
     private static final String DROP = "Drop Tetris Piece to the bottom of the Board";
 
+    /** String for test boards */
+    private static final String TESTSTRING = "TEST BOARD: ";
+
     private SandBox() {
         super();
     }
@@ -90,6 +96,66 @@ public final class SandBox {
         //System.out.println(b);
         LOGGER.info(DROP + NEWLINE + b);
         //System.out.println(b);
+        LOGGER.info(NEWLINE + b);
+
+        test1();
+        test2();
+    }
+
+    /**
+     * another test.
+     */
+    public static void test1() {
+        final Board testBoard = new Board();
+        LOGGER.warning(testBoard.getWidth() + "x" + testBoard.getHeight());
+        //testBoard.newGame(); // must be called before each new game
+
+        final List<TetrisPiece> pieces = new ArrayList<>();
+        pieces.add(TetrisPiece.I);
+        pieces.add(TetrisPiece.J);
+        pieces.add(TetrisPiece.Z);
+        testBoard.setPieceSequence(pieces);
+        testBoard.newGame();
+
+        LOGGER.warning(TESTSTRING + NEWLINE + testBoard);
+        testBoard.drop();
+        LOGGER.warning(TESTSTRING + NEWLINE + testBoard);
+        testBoard.drop();
+        LOGGER.warning(TESTSTRING + NEWLINE + testBoard);
+        testBoard.drop();
+        LOGGER.warning(TESTSTRING + NEWLINE + testBoard);
+    }
+
+    /**
+     * A second additional test.
+     */
+    public static void test2() {
+        final Board testBoard = new Board();
+        LOGGER.warning(testBoard.getWidth() + " by " + testBoard.getHeight());
+        //testBoard.newGame(); // must be called before each new game
+
+        final List<TetrisPiece> pieces = new ArrayList<>();
+        pieces.add(TetrisPiece.I);
+        pieces.add(TetrisPiece.I);
+        pieces.add(TetrisPiece.O);
+        testBoard.setPieceSequence(pieces);
+        testBoard.newGame();
+
+        LOGGER.warning(TESTSTRING + NEWLINE + testBoard);
+        testBoard.left();
+        testBoard.left();
+        testBoard.left();
+        testBoard.drop();
+        LOGGER.warning(TESTSTRING + NEWLINE + testBoard);
+        testBoard.right();
+        testBoard.drop();
+        LOGGER.warning(TESTSTRING + NEWLINE + testBoard);
+        testBoard.right();
+        testBoard.right();
+        testBoard.right();
+        testBoard.right();
+        testBoard.drop();
+        LOGGER.warning(TESTSTRING + NEWLINE + testBoard);
     }
 
 }

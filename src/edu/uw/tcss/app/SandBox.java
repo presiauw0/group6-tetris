@@ -12,6 +12,7 @@ import model.TetrisPiece;
  * The sandbox class for testing Git.
  *
  * @author Preston Sia (305 Group 6)
+ * @author Khalid Rashid
  * @version F2024_001
  */
 public final class SandBox {
@@ -71,7 +72,7 @@ public final class SandBox {
      * @param theArgs Argument from the command line.
      */
     public static void main(final String[] theArgs) {
-        final Board b = new Board();
+        final Board b = Board.getInstance();
         b.newGame();
         LOGGER.info(START + NEWLINE + b);
         //System.out.println(b);
@@ -106,7 +107,7 @@ public final class SandBox {
      * another test.
      */
     public static void test1() {
-        final Board testBoard = new Board();
+        final Board testBoard = Board.getInstance();
         LOGGER.warning(testBoard.getWidth() + "x" + testBoard.getHeight());
         //testBoard.newGame(); // must be called before each new game
 
@@ -130,7 +131,7 @@ public final class SandBox {
      * A second additional test.
      */
     public static void test2() {
-        final Board testBoard = new Board();
+        final Board testBoard = Board.getInstance();
         LOGGER.warning(testBoard.getWidth() + " by " + testBoard.getHeight());
         //testBoard.newGame(); // must be called before each new game
 

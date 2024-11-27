@@ -6,11 +6,13 @@
 
 package model;
 
-
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import model.wallkicks.WallKick;
+
 
 /**
  * Represents a Tetris board. Board objects communicate with clients via Observer pattern. 
@@ -31,11 +33,16 @@ import model.wallkicks.WallKick;
  * 
  * @author Charles Bryan
  * @author Alan Fowler
+ * @author Khalid Rashid
  * @version 1.3
  */
 public class Board implements MyBoard {
 
     // Class constants
+    /**
+     * A singleton using the static factory method
+     */
+    private static final Board INSTANCE = new Board();
     
     /**
      * Default width of a Tetris game board.
@@ -47,7 +54,7 @@ public class Board implements MyBoard {
      */
     private static final int DEFAULT_HEIGHT = 20;
 
-    
+
     // Instance fields
     
     /**
@@ -96,14 +103,18 @@ public class Board implements MyBoard {
      * down movement in the drop.
      */
     private boolean myDrop;
-    
+
+    /**
+     * Manager for Property Change Listeners.
+     */
+    private final PropertyChangeSupport myPcs;
     // Constructors
 
     /**
-     * Default Tetris board constructor.
+     * A private Default Tetris board constructor.
      * Creates a standard size tetris game board.
      */
-    public Board() {
+    private Board() {
         this(DEFAULT_WIDTH, DEFAULT_HEIGHT);
     }
 
@@ -118,16 +129,72 @@ public class Board implements MyBoard {
         myWidth = theWidth;
         myHeight = theHeight;
         myFrozenBlocks = new LinkedList<>();
-         
         myNonRandomPieces = new ArrayList<>();
         mySequenceIndex = 0;
-        
+
+        myPcs = new PropertyChangeSupport(this);
         /*  myNextPiece and myCurrentPiece
          *  are initialized by the newGame() method.
          */
     }
-    
 
+    /**
+     * Returns The specific instance of the Board class.
+     * @return Returns The specific instance of the Board class
+     */
+    public static Board getInstance() {
+        return INSTANCE;
+    }
+
+    /**
+     * Adds a property change listener.
+     * @param theListener The PropertyChangeListener to be added
+     */
+    @Override
+    public void addPropertyChangeListener(final PropertyChangeListener theListener) {
+        myPcs.addPropertyChangeListener(theListener);
+    }
+
+    /**
+     * Add a PropertyChangeListener for a specific property. The listener will be invoked only
+     * when a call on firePropertyChange names that specific property. The same listener object
+     * may be added more than once. For each property, the listener will be invoked the number
+     * of times it was added for that property. If propertyName or listener is null, no
+     * exception is thrown and no action is taken.
+     *
+     * @param thePropertyName The name of the property to listen on.
+     * @param theListener     The PropertyChangeListener to be added
+     */
+    @Override
+    public void addPropertyChangeListener(final String thePropertyName,
+                                          final PropertyChangeListener theListener) {
+        myPcs.addPropertyChangeListener(thePropertyName, theListener);
+    }
+
+    /**
+     * Removes a property change listener.
+     * @param theListener The PropertyChangeListener to be removed
+     */
+    @Override
+    public void removePropertyChangeListener(final PropertyChangeListener theListener) {
+        myPcs.removePropertyChangeListener(theListener);
+    }
+
+    /**
+     * Remove a PropertyChangeListener for a specific property. If listener was added more than
+     * once to the same event source for the specified property, it will be notified one less
+     * time after being removed. If propertyName is null, no exception is thrown and no action
+     * is taken. If listener is null, or was never added for the specified property, no
+     * exception is thrown and no action is taken.
+     *
+     * @param thePropertyName The name of the property that was listened on.
+     * @param theListener     The PropertyChangeListener to be removed
+     */
+    @Override
+    public void removePropertyChangeListener(final String thePropertyName,
+                                             final PropertyChangeListener theListener) {
+        myPcs.removePropertyChangeListener(thePropertyName, theListener);
+    }
     // public queries
     
     /**
@@ -159,7 +226,7 @@ public class Board implements MyBoard {
      */
     @Override
     public void newGame() {
-        
+        final boolean old = myGameOver;
         mySequenceIndex = 0;
         myFrozenBlocks.clear();
         for (int h = 0; h < myHeight; h++) {
@@ -171,6 +238,7 @@ public class Board implements MyBoard {
         myDrop = false;
         
         // TODO Publish Update!
+        myPcs.firePropertyChange(MyBoard.PROPERTY_GAME_OVER, old, myGameOver);
     }
 
     /**
@@ -211,6 +279,8 @@ public class Board implements MyBoard {
      */
     @Override
     public void down() {
+        // is this the correct way to store the current state of frozen blocks?
+        final List<Block[]> old = getBoard();
         if (!move(myCurrentPiece.down())) {
             // the piece froze, so clear lines and update current piece
             addPieceToBoardData(myFrozenBlocks, myCurrentPiece);
@@ -219,6 +289,8 @@ public class Board implements MyBoard {
                 myCurrentPiece = nextMovablePiece(false);
             }
             // TODO Publish Update!
+            // double check whether to pass in myFroxenBlocks or myCurrentPiece
+            myPcs.firePropertyChange(MyBoard.PROPERTY_GAME_BOARD, old, myFrozenBlocks);
         }
     }
 
@@ -345,21 +417,23 @@ public class Board implements MyBoard {
 
     
     // private helper methods
-    
+
     /**
      * Helper function to check if the current piece can be shifted to the
      * specified position.
-     * 
+     *
      * @param theMovedPiece the position to attempt to shift the current piece
      * @return True if the move succeeded
      */
     private boolean move(final MovableTetrisPiece theMovedPiece) {
         boolean result = false;
+        final MovableTetrisPiece old = myCurrentPiece;
         if (isPieceLegal(theMovedPiece)) {
             myCurrentPiece = theMovedPiece;
             result = true;
             if (!myDrop) {
                 // TODO Publish Update!
+                myPcs.firePropertyChange(MyBoard.PROPERTY_GAME_BOARD, old, myCurrentPiece);
             }
         }
         return result;
@@ -420,8 +494,9 @@ public class Board implements MyBoard {
                 }
             }
             if (complete) {
+                final List<Integer> old = new ArrayList<>();
                 completeRows.add(myFrozenBlocks.indexOf(row));
-             // TODO Publish Update!
+                myPcs.firePropertyChange(MyBoard.PROPERTY_CLEAR_ROW, old, completeRows);
             }
         }
         // loop through list backwards removing items by index
@@ -475,7 +550,7 @@ public class Board implements MyBoard {
             row[thePoint.x()] = theBlock;
         } else if (!myGameOver) {
             myGameOver = true;
-            // TODO Publish Update!
+            myPcs.firePropertyChange(MyBoard.PROPERTY_GAME_OVER, false, true);
         }
     }
 
@@ -540,7 +615,7 @@ public class Board implements MyBoard {
      * Prepares the Next movable piece for preview.
      */
     private void prepareNextMovablePiece() {
-        
+        final TetrisPiece old = myNextPiece;
         final boolean share = myNextPiece != null;
         if (myNonRandomPieces == null || myNonRandomPieces.isEmpty()) {
             myNextPiece = TetrisPiece.getRandomPiece();
@@ -549,7 +624,7 @@ public class Board implements MyBoard {
             myNextPiece = myNonRandomPieces.get(mySequenceIndex++);
         }
         if (share && !myGameOver) {
-            // TODO Publish Update!
+            myPcs.firePropertyChange(MyBoard.PROPERTY_NEXT_PIECE_CHANGE, old, myNextPiece);
         }
     }    
 

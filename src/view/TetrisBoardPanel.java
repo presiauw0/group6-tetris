@@ -78,6 +78,11 @@ public class TetrisBoardPanel extends JPanel implements PropertyChangeListener {
     private final List<MyMovableTetrisPiece> myTetrisPieces;
 
     /**
+     * Boolean value to indicate whether to show gridlines.
+     */
+    private boolean myShowGridLines;
+
+    /**
      * Store a color scheme to use for the Tetrominos
      */
     private final TetrisColorScheme myColorScheme;
@@ -122,6 +127,8 @@ public class TetrisBoardPanel extends JPanel implements PropertyChangeListener {
         myColorScheme = new TetrisColorSchemeDefault();
         myTetrisPieces = new ArrayList<>();
 
+        myShowGridLines = false;
+
         layoutComponents();
         drawPieces();
     }
@@ -164,8 +171,36 @@ public class TetrisBoardPanel extends JPanel implements PropertyChangeListener {
                 g2d.draw(rect);
             }
         }
+
+        // *** CODE FOR GRIDLINES ***
+        if (myShowGridLines) {
+            paintHelperDrawGridlines(g2d);
+        }
     }
 
+    /**
+     * Helper method for the paintComponent method for
+     * drawing gridlines.
+     *
+     * @param theGraphics A Graphics2D object used as a drawing canvas.
+     */
+    private void paintHelperDrawGridlines(final Graphics2D theGraphics) {
+        theGraphics.setStroke(new BasicStroke(1));
+        theGraphics.setPaint(TetrisColorSchemeDefault.BORDER_COLOR);
+        for (int i = 0; i < myBoardWidth; i++) {
+            for (int j = 0; j < myBoardHeight; j++) {
+                final Shape gridRect = new Rectangle2D.Double(
+                        i * myBlockWidthPX, j * myBoardHeight,
+                        myBlockWidthPX, myBlockWidthPX
+                );
+                theGraphics.draw(gridRect);
+            }
+        }
+    }
+
+    /**
+     * Add Tetris pieces to drawing pipeling for display.
+     */
     private void drawPieces() {
         // store all pieces here so we can iterate over them
         final TetrisPiece[] pieces = {
@@ -187,6 +222,13 @@ public class TetrisBoardPanel extends JPanel implements PropertyChangeListener {
                     new Point(i, myBoardHeight - pieceOffset - (i * pieceOffset))
             ));
         }
+    }
+
+    /**
+     * Toggle gridlines on and off.
+     */
+    private void setGridlines(final boolean theValue) {
+        myShowGridLines = theValue;
     }
 
     /**

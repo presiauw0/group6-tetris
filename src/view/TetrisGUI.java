@@ -16,7 +16,7 @@ import model.MyBoard;
  * Combines the menu bar, game board, next piece preview, and scoreboard.
  * Updated for Sprint 2 to include integration with Board, Timer, and listeners.
  *
- * @author Abdulrahman Hassan
+ * @author Abdulrahman Hassan, Balkirat Singh
  * @version Autumn 2024
  */
 public final class TetrisGUI extends JPanel {

@@ -36,7 +36,7 @@ import model.wallkicks.WallKick;
  * @author Khalid Rashid
  * @version 1.3
  */
-public class Board implements MyBoard {
+public final class Board implements MyBoard {
 
     // Class constants
     /**
@@ -124,7 +124,7 @@ public class Board implements MyBoard {
      * @param theWidth Width of the Tetris game board.
      * @param theHeight Height of the Tetris game board.
      */
-    public Board(final int theWidth, final int theHeight) {
+    private Board(final int theWidth, final int theHeight) {
         super();
         myWidth = theWidth;
         myHeight = theHeight;

@@ -8,6 +8,8 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JFrame;
@@ -26,7 +28,7 @@ import view.colors.TetrisColorSchemeDefault;
  * @author Preston Sia
  * @version F2024_001
  */
-public class TetrisBoardPanel extends JPanel {
+public class TetrisBoardPanel extends JPanel implements PropertyChangeListener {
     /**
      * Default multiple for the width of the panel.
      * Multiply the block side length by this amount.
@@ -193,6 +195,11 @@ public class TetrisBoardPanel extends JPanel {
      */
     private int getHorizontalCenterOffset(final TetrisPiece thePiece) {
         return (myBoardWidth / 2) - (int) Math.ceil(thePiece.getWidth() / 2.0);
+    }
+
+    @Override
+    public void propertyChange(final PropertyChangeEvent theEvent) {
+
     }
 
 

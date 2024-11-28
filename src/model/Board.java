@@ -226,7 +226,8 @@ public final class Board implements MyBoard {
      */
     @Override
     public void newGame() {
-        final boolean old = myGameOver;
+        //final boolean old = myGameOver; // PropertyChange
+
         mySequenceIndex = 0;
         myFrozenBlocks.clear();
         for (int h = 0; h < myHeight; h++) {
@@ -238,7 +239,8 @@ public final class Board implements MyBoard {
         myDrop = false;
         
         // TODO Publish Update!
-        myPcs.firePropertyChange(MyBoard.PROPERTY_GAME_OVER, old, myGameOver);
+        myPcs.firePropertyChange(MyBoard.PROPERTY_GAME_OVER_STATE,
+                null, myGameOver);
     }
 
     /**
@@ -281,6 +283,9 @@ public final class Board implements MyBoard {
     public void down() {
         // is this the correct way to store the current state of frozen blocks?
         final List<Block[]> old = getBoard();
+
+        // presiauw0 - should attempt to move the piece down. If a move
+        // couldn't happen, do the following, otherwise move as normal.
         if (!move(myCurrentPiece.down())) {
             // the piece froze, so clear lines and update current piece
             addPieceToBoardData(myFrozenBlocks, myCurrentPiece);
@@ -290,7 +295,7 @@ public final class Board implements MyBoard {
             }
             // TODO Publish Update!
             // double check whether to pass in myFroxenBlocks or myCurrentPiece
-            myPcs.firePropertyChange(MyBoard.PROPERTY_GAME_BOARD, old, myFrozenBlocks);
+            myPcs.firePropertyChange(MyBoard.PROPERTY_NEXT_PIECE_CHANGE, old, myFrozenBlocks);
         }
     }
 
@@ -433,7 +438,8 @@ public final class Board implements MyBoard {
             result = true;
             if (!myDrop) {
                 // TODO Publish Update!
-                myPcs.firePropertyChange(MyBoard.PROPERTY_GAME_BOARD, old, myCurrentPiece);
+                myPcs.firePropertyChange(MyBoard.PROPERTY_CURRENT_PIECE_CHANGE,
+                        old, myCurrentPiece);
             }
         }
         return result;
@@ -494,9 +500,10 @@ public final class Board implements MyBoard {
                 }
             }
             if (complete) {
-                final List<Integer> old = new ArrayList<>();
+                //final List<Integer> old = new ArrayList<>();
                 completeRows.add(myFrozenBlocks.indexOf(row));
-                myPcs.firePropertyChange(MyBoard.PROPERTY_CLEAR_ROW, old, completeRows);
+                myPcs.firePropertyChange(MyBoard.PROPERTY_CLEAR_ROW,
+                        null, completeRows);
             }
         }
         // loop through list backwards removing items by index
@@ -550,7 +557,8 @@ public final class Board implements MyBoard {
             row[thePoint.x()] = theBlock;
         } else if (!myGameOver) {
             myGameOver = true;
-            myPcs.firePropertyChange(MyBoard.PROPERTY_GAME_OVER, false, true);
+            myPcs.firePropertyChange(MyBoard.PROPERTY_GAME_OVER_STATE,
+                    null, true);
         }
     }
 

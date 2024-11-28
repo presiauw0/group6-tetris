@@ -14,7 +14,9 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import model.Board;
 import model.MovableTetrisPiece;
+import model.MyBoard;
 import model.MyMovableTetrisPiece;
 import model.Point;
 import model.TetrisPiece;
@@ -88,6 +90,8 @@ public class TetrisBoardPanel extends JPanel implements PropertyChangeListener {
     private final TetrisColorScheme myColorScheme;
 
 
+    //TODO remove constructors for setting width and height
+    //  must retrieve from board
     /**
      * Constructor to configure the Tetris board
      * using the defaults specified in the static fields.
@@ -131,6 +135,9 @@ public class TetrisBoardPanel extends JPanel implements PropertyChangeListener {
 
         layoutComponents();
         drawPieces();
+
+        final MyBoard ourBoard = Board.getInstance();
+        ourBoard.addPropertyChangeListener(this);
     }
 
     /**

@@ -2,7 +2,6 @@ package view;
 
 import static model.MyBoard.PROPERTY_GAME_OVER_STATE;
 import static model.MyBoard.PROPERTY_CURRENT_PIECE_CHANGE;
-import static model.MyBoard.PROPERTY_NEXT_PIECE_CHANGE;
 import static model.MyBoard.PROPERTY_FROZEN_PIECES_CHANGE;
 
 import java.awt.BasicStroke;
@@ -19,13 +18,13 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import model.Block;
 import model.Board;
 import model.MovableTetrisPiece;
 import model.MyBoard;
 import model.MyMovableTetrisPiece;
 import model.Point;
 import model.TetrisPiece;
-import model.Block;
 import view.colors.TetrisColorScheme;
 import view.colors.TetrisColorSchemeDefault;
 
@@ -396,10 +395,16 @@ public class TetrisBoardPanel extends JPanel implements PropertyChangeListener {
         window.setVisible(true);
 
         //TODO GET RID OF THIS IS TEMPORARY
+        /*
         Board.getInstance().newGame();
+
+        Board.getInstance().left();
+        Board.getInstance().left();
+        Board.getInstance().left();
         Board.getInstance().drop();
-        Board.getInstance().down();
         Board.getInstance().drop();
+        Board.getInstance().drop();*/
+
     }
 
     /**

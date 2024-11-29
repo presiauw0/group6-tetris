@@ -341,12 +341,19 @@ public class TetrisBoardPanel extends JPanel implements PropertyChangeListener {
         }
 
         if (PROPERTY_FROZEN_PIECES_CHANGE.equals(theEvent.getPropertyName())) {
-            final Object newVal = theEvent.getNewValue();
             final List<?> newValCast;
-            if (newVal instanceof List) {
-                newValCast = (List<?>) newVal;
-                propFrozenPieceChange((List<Block[]>) newValCast);
-                // FIXME safe cast
+            final List<Block[]> blockList = new ArrayList<>();
+
+            if (theEvent.getNewValue() instanceof List) {
+                newValCast = (List<?>) theEvent.getNewValue();
+                // ensures all values are of type Block[] and ensures that
+                // the list used by the board class itself isn't modified down the road.
+                for (final Object o : newValCast) {
+                    if (o instanceof Block[]) {
+                        blockList.add((Block[]) o);
+                    }
+                }
+                propFrozenPieceChange(blockList);
             }
 
         }
@@ -377,6 +384,7 @@ public class TetrisBoardPanel extends JPanel implements PropertyChangeListener {
     private void propFrozenPieceChange(final List<Block[]> theBlocks) {
         if (theBlocks != null) {
             myFrozenBlocks = theBlocks;
+            myCurrentPiece = null; // remove current piece, will hopefully remove ghost pieces
         }
 
         repaint();

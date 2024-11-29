@@ -1,27 +1,27 @@
 package view;
 
+import static model.MyBoard.PROPERTY_GAME_OVER_STATE;
+
 import java.awt.BorderLayout;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
+import java.awt.event.WindowEvent;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 import model.Board;
 import model.MyBoard;
-import java.awt.event.WindowEvent;
-import javax.swing.JOptionPane;
 
 /**
  * The graphical user interface for the Tetris game.
  * Combines the menu bar, game board, next piece preview, and scoreboard.
  * Updated for Sprint 2 to include integration with Board, Timer, and listeners.
  *
- * @author Abdulrahman Hassan, Balkirat Singh
+ * @author Abdulrahman Hassan, Balkirat Singh, Preston Sia
  * @version Autumn 2024
  */
 public final class TetrisGUI extends JPanel {
@@ -30,6 +30,9 @@ public final class TetrisGUI extends JPanel {
 
     /** Label for the about dialog box */
     private static final String MENULABEL_ABOUT = "About";
+
+    /** Default Time interval for game timer in milliseconds */
+    private static final int DEFAULT_TIME_DELAY = 500;
 
     /** The Tetris Board Panel. */
     private final TetrisBoardPanel myBoardPanel;
@@ -44,10 +47,13 @@ public final class TetrisGUI extends JPanel {
     private final JFrame myFrame;
 
     /** The primary model object using the Board interface. */
-    private final Board myBoard;
+    private final MyBoard myBoard;
 
     /** The game timer controlling the game loop. */
     private final Timer myTimer;
+
+    /** Boolean value indicates if the game is over or not. */
+    private boolean myGameOver;
 
     /**
      * Constructs the Tetris GUI, integrating the panels and menu bar.
@@ -63,9 +69,19 @@ public final class TetrisGUI extends JPanel {
         myNextPeicePanel = new NextPeice();
         myScoreBoardPanel = new ScoreBoard();
 
-        // Timer ticks every 500 ms and calls step() on the Board
-        myTimer = new Timer(500, e -> myBoard.step());
+        // Timer ticks on a certain interval and calls step() on the Board
+        myTimer = new Timer(DEFAULT_TIME_DELAY, e -> myBoard.step());
 
+        myGameOver = true; // True if the game does not start on launch
+
+        callConstructorHelperMethods();
+    }
+
+    /**
+     * Helper method to call necessary helper methods
+     * when constructing a new GUI.
+     */
+    private void callConstructorHelperMethods() {
         buildMenu();
         layoutComponents();
         addListeners();
@@ -97,10 +113,7 @@ public final class TetrisGUI extends JPanel {
         final JMenuItem exitItem = new JMenuItem("Exit");
         exitItem.setMnemonic(KeyEvent.VK_X);
 
-        newGameItem.addActionListener(e -> {
-            myBoard.newGame();
-            myTimer.start();
-        });
+        newGameItem.addActionListener(e -> startNewGame());
         pauseGameItem.addActionListener(theEvent -> togglePauseResume());
         exitItem.addActionListener(theEvent ->
                 myFrame.dispatchEvent(new WindowEvent(myFrame, WindowEvent.WINDOW_CLOSING)));
@@ -167,7 +180,10 @@ public final class TetrisGUI extends JPanel {
      * Stops the game timer when the game is over.
      */
     private void addPropertyChangeListeners() {
-        myBoard.addPropertyChangeListener("gameOver", evt -> myTimer.stop());
+        myBoard.addPropertyChangeListener(PROPERTY_GAME_OVER_STATE, evt -> {
+            myTimer.stop();
+            myGameOver = true;
+        });
     }
 
     /**
@@ -175,7 +191,9 @@ public final class TetrisGUI extends JPanel {
      * This method is called when a new game is started from the menu.
      */
     private void startNewGame() {
-        JOptionPane.showMessageDialog(myFrame, "Starting a new game!");
+        myBoard.newGame();
+        myTimer.start();
+        myGameOver = false;
     }
 
     /**
@@ -183,7 +201,14 @@ public final class TetrisGUI extends JPanel {
      * This method is triggered from the menu.
      */
     private void togglePauseResume() {
-        JOptionPane.showMessageDialog(myFrame, "Toggling pause/resume!");
+        if (!myGameOver) {
+            if (myTimer.isRunning()) {
+                myTimer.stop();
+            } else {
+                myTimer.start();
+            }
+        }
+
     }
 
     /**
@@ -239,21 +264,24 @@ public final class TetrisGUI extends JPanel {
     private final class MyKeyAdapter extends KeyAdapter {
         @Override
         public void keyPressed(final KeyEvent theEvent) {
-            switch (theEvent.getKeyCode()) {
-                case KeyEvent.VK_LEFT -> myBoard.left();
-                case KeyEvent.VK_RIGHT -> myBoard.right();
-                case KeyEvent.VK_DOWN -> myBoard.down();
-                case KeyEvent.VK_SPACE -> myBoard.drop();
-                case KeyEvent.VK_UP -> myBoard.rotateCW();
-                case KeyEvent.VK_P -> {
-                    if (myTimer.isRunning()) {
-                        myTimer.stop();
-                    } else {
-                        myTimer.start();
+            if (!myGameOver) {
+                if (myTimer.isRunning()) {
+                    switch (theEvent.getKeyCode()) {
+                        case KeyEvent.VK_LEFT, KeyEvent.VK_A -> myBoard.left();
+                        case KeyEvent.VK_RIGHT, KeyEvent.VK_D -> myBoard.right();
+                        case KeyEvent.VK_DOWN, KeyEvent.VK_S -> myBoard.down();
+                        case KeyEvent.VK_SPACE -> myBoard.drop();
+                        case KeyEvent.VK_UP, KeyEvent.VK_W -> myBoard.rotateCW();
+                        default -> {
+                        } // No action for other keys
                     }
                 }
-                default -> { } // No action for other keys
+
+                if (theEvent.getKeyCode() == KeyEvent.VK_P) {
+                    togglePauseResume();
+                }
             }
+
         }
     }
 }

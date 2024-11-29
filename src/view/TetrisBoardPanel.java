@@ -246,7 +246,7 @@ public class TetrisBoardPanel extends JPanel implements PropertyChangeListener {
 
             for (final Point block : piecePoints) {
                 final int xCoord = block.x() * myBlockWidthPX;
-                final int yCoord = (myBoardHeight - block.y()) * myBlockWidthPX;
+                final int yCoord = (myBoardHeight - block.y() - 1) * myBlockWidthPX;
 
                 final Shape rect = new Rectangle2D.Double(
                         xCoord, yCoord, myBlockWidthPX, myBlockWidthPX
@@ -359,9 +359,11 @@ public class TetrisBoardPanel extends JPanel implements PropertyChangeListener {
             if (myFrozenBlocks != null) {
                 myFrozenBlocks.clear();
             }
+            repaint();
         } else {
             myGameOver = true;
             // TODO Display something when the game is over
+            repaint();
         }
 
     }
@@ -371,12 +373,14 @@ public class TetrisBoardPanel extends JPanel implements PropertyChangeListener {
         if (theNewPiece != null) {
             myCurrentPiece = theNewPiece;
         }
+        repaint();
     }
 
     private void propFrozenPieceChange(final List<Block[]> theBlocks) {
         if (theBlocks != null) {
             myFrozenBlocks = theBlocks;
         }
+        repaint();
     }
 
 

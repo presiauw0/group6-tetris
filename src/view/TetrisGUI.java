@@ -82,7 +82,7 @@ public final class TetrisGUI extends JPanel {
 
         final JMenuItem newGameItem = new JMenuItem("New Game");
         newGameItem.addActionListener(e -> {
-            //myBoard.reset();
+            myBoard.newGame();
             myTimer.start();
         });
 

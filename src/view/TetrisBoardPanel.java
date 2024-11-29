@@ -356,9 +356,7 @@ public class TetrisBoardPanel extends JPanel implements PropertyChangeListener {
     private void propGameOverCheck(final boolean theGameOver) {
         if (!theGameOver) {
             myGameOver = false;
-            if (myFrozenBlocks != null) {
-                myFrozenBlocks.clear();
-            }
+            myFrozenBlocks = null;
             repaint();
         } else {
             myGameOver = true;
@@ -380,6 +378,7 @@ public class TetrisBoardPanel extends JPanel implements PropertyChangeListener {
         if (theBlocks != null) {
             myFrozenBlocks = theBlocks;
         }
+
         repaint();
     }
 
@@ -397,18 +396,6 @@ public class TetrisBoardPanel extends JPanel implements PropertyChangeListener {
         window.setContentPane(mainPanel);
         window.pack();
         window.setVisible(true);
-
-        //TODO GET RID OF THIS IS TEMPORARY
-        /*
-        Board.getInstance().newGame();
-
-        Board.getInstance().left();
-        Board.getInstance().left();
-        Board.getInstance().left();
-        Board.getInstance().drop();
-        Board.getInstance().drop();
-        Board.getInstance().drop();*/
-
     }
 
     /**

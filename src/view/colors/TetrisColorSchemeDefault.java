@@ -3,6 +3,7 @@ package view.colors;
 import java.awt.Color;
 import java.util.HashMap;
 import java.util.Map;
+import model.Block;
 import model.TetrisPiece;
 
 
@@ -65,6 +66,11 @@ public final class TetrisColorSchemeDefault implements TetrisColorScheme {
      */
     private final Map<TetrisPiece, Color> myColorMap;
 
+    /**
+     * Map of colors for Tetris Block enum types.
+     */
+    private final Map<Block, Color> myColorMapForBlock;
+
 
     /**
      * Constructor for creating the map of colors.
@@ -72,8 +78,10 @@ public final class TetrisColorSchemeDefault implements TetrisColorScheme {
     public TetrisColorSchemeDefault() {
         super();
         myColorMap = new HashMap<>();
+        myColorMapForBlock = new HashMap<>();
 
         setColors();
+        setColorsForBlock();
     }
 
     private void setColors() {
@@ -86,11 +94,33 @@ public final class TetrisColorSchemeDefault implements TetrisColorScheme {
         myColorMap.put(TetrisPiece.Z, COLOR_Z);
     }
 
+    private void setColorsForBlock() {
+        myColorMapForBlock.put(Block.I, COLOR_I);
+        myColorMapForBlock.put(Block.J, COLOR_J);
+        myColorMapForBlock.put(Block.L, COLOR_L);
+        myColorMapForBlock.put(Block.O, COLOR_O);
+        myColorMapForBlock.put(Block.S, COLOR_S);
+        myColorMapForBlock.put(Block.T, COLOR_T);
+        myColorMapForBlock.put(Block.Z, COLOR_Z);
+        myColorMapForBlock.put(Block.EMPTY, null);
+    }
+
     @Override
     public Color getColor(final TetrisPiece thePiece) {
         Color someColor = myColorMap.get(thePiece);
 
         if (someColor == null) {
+            someColor = FALLBACK_COLOR;
+        }
+
+        return someColor;
+    }
+
+    @Override
+    public Color getColor(final Block theBlock) {
+        Color someColor = myColorMapForBlock.get(theBlock);
+
+        if (theBlock != Block.EMPTY && someColor == null) {
             someColor = FALLBACK_COLOR;
         }
 

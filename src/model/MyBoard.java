@@ -30,7 +30,7 @@ public interface MyBoard {
     /**
      * A property for when the collection of frozen pieces change.
      * This includes when a piece is added or when rows are cleared.
-     * It returns a collection that contains the blocks that make
+     * It returns a collection (List&lt;Block[]&gt;) that contains the blocks that make
      * up all the currently frozen pieces or fragments thereof.
      */
     String PROPERTY_FROZEN_PIECES_CHANGE = "FROZEN PIECES CHANGE";
@@ -47,7 +47,7 @@ public interface MyBoard {
     /**
      * A property that indicates what the previous "next piece"
      * was and what the new "next piece" is queued as. Paremeters
-     * indicate the MovableTetrisPiece of the old and new next piece.
+     * indicate the TetrisPiece (enum) of the old and new next piece.
      */
     String PROPERTY_NEXT_PIECE_CHANGE = "THE NEXT GAME PIECE CHANGES";
 

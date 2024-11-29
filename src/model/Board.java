@@ -295,7 +295,8 @@ public final class Board implements MyBoard {
             }
             // TODO Publish Update!
             // double check whether to pass in myFroxenBlocks or myCurrentPiece
-            myPcs.firePropertyChange(MyBoard.PROPERTY_NEXT_PIECE_CHANGE, old, myFrozenBlocks);
+            myPcs.firePropertyChange(MyBoard.PROPERTY_FROZEN_PIECES_CHANGE,
+                    old, myFrozenBlocks);
         }
     }
 

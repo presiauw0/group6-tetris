@@ -3,11 +3,14 @@ package view;
 import java.awt.BorderLayout;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.Timer;
 import model.Board;
 import model.MyBoard;
 
@@ -34,11 +37,10 @@ public final class TetrisGUI extends JPanel {
     private final JFrame myFrame;
 
     /** The primary model object using the Board interface. */
-    private final MyBoard myBoard;
+    private final Board myBoard;
 
-    // /** The game timer controlling the game loop. */
-    //private final Timer myTimer;
-
+    /** The game timer controlling the game loop. */
+    private final Timer myTimer;
 
     /**
      * Constructs the Tetris GUI, integrating the panels and menu bar.
@@ -55,10 +57,16 @@ public final class TetrisGUI extends JPanel {
         myScoreBoardPanel = new ScoreBoard();
 
         myBoard.newGame(); // Ensure the game starts with an active piece
+
+        // Timer ticks every 500 ms and calls step() on the Board
+        myTimer = new Timer(500, e -> myBoard.step());
+
         buildMenu();
         layoutComponents();
         addListeners();
+        addPropertyChangeListeners();
     }
+
     /**
      * Builds the menu bar for the Tetris GUI.
      */
@@ -73,7 +81,10 @@ public final class TetrisGUI extends JPanel {
         final JMenu gameMenu = new JMenu("Game");
 
         final JMenuItem newGameItem = new JMenuItem("New Game");
-        newGameItem.addActionListener(e -> myBoard.newGame());
+        newGameItem.addActionListener(e -> {
+            //myBoard.reset();
+            myTimer.start();
+        });
 
         gameMenu.add(newGameItem);
         return gameMenu;
@@ -108,16 +119,21 @@ public final class TetrisGUI extends JPanel {
         myFrame.setVisible(true);
     }
 
-
     /**
      * Adds necessary listeners to the GUI.
      */
     private void addListeners() {
         // KeyListener for user input
         addKeyListener(new MyKeyAdapter());
-
         setFocusable(true);
         requestFocusInWindow();
+    }
+
+    /**
+     * Adds property change listeners to the Board.
+     */
+    private void addPropertyChangeListeners() {
+        myBoard.addPropertyChangeListener("gameOver", evt -> myTimer.stop());
     }
 
     /**
@@ -145,14 +161,13 @@ public final class TetrisGUI extends JPanel {
                 case KeyEvent.VK_DOWN -> myBoard.down();
                 case KeyEvent.VK_SPACE -> myBoard.drop();
                 case KeyEvent.VK_UP -> myBoard.rotateCW();
-// Uncomment this when timer is implemented.
-//                    case KeyEvent.VK_P -> {
-//                        if (myTimer.isRunning()) {
-//                            myTimer.stop();
-//                        } else {
-//                            myTimer.start();
-//                        }
-//                    }
+                case KeyEvent.VK_P -> {
+                    if (myTimer.isRunning()) {
+                        myTimer.stop();
+                    } else {
+                        myTimer.start();
+                    }
+                }
                 default -> { } // No action for other keys
             }
         }

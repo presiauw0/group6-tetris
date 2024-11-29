@@ -1,6 +1,7 @@
 package view.colors;
 
 import java.awt.Color;
+import model.Block;
 import model.TetrisPiece;
 
 
@@ -13,7 +14,7 @@ import model.TetrisPiece;
  * @author Preston Sia
  * @version F2024_001
  */
-@FunctionalInterface
+
 public interface TetrisColorScheme {
 
     /**
@@ -25,5 +26,15 @@ public interface TetrisColorScheme {
      * @return The color representing the specified piece for this color scheme
      */
     Color getColor(TetrisPiece thePiece);
+
+    /**
+     * Returns the corresponding color of a Tetris block
+     * for the current color scheme. If a color is not
+     * found, it will return the FALLBACK_COLOR.
+     *
+     * @param theBlock Tetris Block enum to evaluate against
+     * @return The color representing the specified block for this color scheme
+     */
+    Color getColor(Block theBlock);
 
 }

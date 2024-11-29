@@ -12,29 +12,54 @@ import java.util.List;
  *
  * @author Balkirat Singh
  * @author Khalid Rashid
+ * @author Preston Sia
  * @version Autumn 2024
  */
 
 public interface MyBoard {
     /**
-     * A property for the Game Boared.
+     * A property fired when a piece is moved or rotated.
+     * This event delivers information about the previous
+     * MovableTetrisPiece and the new MovableTetrisPiece
+     * with state changes (MovableTetrisPiece is immutable,
+     * so a new MovableTetrisPiece will contain new changes
+     * to position and rotation).
      */
-    String PROPERTY_GAME_BOARD = "THE GAME BOARD";
+    String PROPERTY_CURRENT_PIECE_CHANGE = "CURRENT PIECE CHANGE";
 
     /**
-     * A property for the Game Boared.
+     * A property for when the collection of frozen pieces change.
+     * This includes when a piece is added or when rows are cleared.
+     * It returns a collection (List&lt;Block[]&gt;) that contains the blocks that make
+     * up all the currently frozen pieces or fragments thereof.
      */
-    String PROPERTY_CLEAR_ROW = "THE ROW CLEARS";
+    String PROPERTY_FROZEN_PIECES_CHANGE = "FROZEN PIECES CHANGE";
 
     /**
-     * A property for the Game Boared.
+     * A property that lets interested parties know
+     * that a row was cleared. It returns a list
+     * containing the index of the completed rows
+     * found thus far. This event is fired for every row
+     * that is found to be complete.
+     */
+    String PROPERTY_CLEAR_ROW = "ROW CLEARED";
+
+    /**
+     * A property that indicates what the previous "next piece"
+     * was and what the new "next piece" is queued as. Paremeters
+     * indicate the TetrisPiece (enum) of the old and new next piece.
      */
     String PROPERTY_NEXT_PIECE_CHANGE = "THE NEXT GAME PIECE CHANGES";
 
     /**
-     * A property for the Game Boared.
+     * A property that indicates whether the
+     * game over or not. When the game is over
+     * an event is fired indicating that this
+     * property is true. When a new game is created,
+     * an event is fired indicating that this
+     * property is false.
      */
-    String PROPERTY_GAME_OVER = "THE GAME IS OVER";
+    String PROPERTY_GAME_OVER_STATE = "GAME STATE";
 
     /**
      * Add a PropertyChangeListener to the listener list. The listener is registered for

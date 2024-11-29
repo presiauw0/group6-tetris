@@ -13,6 +13,8 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 import model.Board;
 import model.MyBoard;
+import java.awt.event.WindowEvent;
+import javax.swing.JOptionPane;
 
 /**
  * The graphical user interface for the Tetris game.
@@ -23,6 +25,11 @@ import model.MyBoard;
  * @version Autumn 2024
  */
 public final class TetrisGUI extends JPanel {
+    /** Lable for the how to play dialog box */
+    private static final String MENULABEL_HOWTOPLAY = "How to Play";
+
+    /** Label for the about dialog box */
+    private static final String MENULABEL_ABOUT = "About";
 
     /** The Tetris Board Panel. */
     private final TetrisBoardPanel myBoardPanel;
@@ -56,8 +63,6 @@ public final class TetrisGUI extends JPanel {
         myNextPeicePanel = new NextPeice();
         myScoreBoardPanel = new ScoreBoard();
 
-        myBoard.newGame(); // Ensure the game starts with an active piece
-
         // Timer ticks every 500 ms and calls step() on the Board
         myTimer = new Timer(500, e -> myBoard.step());
 
@@ -69,6 +74,7 @@ public final class TetrisGUI extends JPanel {
 
     /**
      * Builds the menu bar for the Tetris GUI.
+     * Adds the Game and Help menus to the menu bar.
      */
     private void buildMenu() {
         final JMenuBar menuBar = new JMenuBar();
@@ -80,28 +86,54 @@ public final class TetrisGUI extends JPanel {
     private JMenu buildGameMenu() {
         final JMenu gameMenu = new JMenu("Game");
 
+        gameMenu.setMnemonic(KeyEvent.VK_G);
+
         final JMenuItem newGameItem = new JMenuItem("New Game");
+        newGameItem.setMnemonic(KeyEvent.VK_N);
+
+        final JMenuItem pauseGameItem = new JMenuItem("Pause/Resume");
+        pauseGameItem.setMnemonic(KeyEvent.VK_P);
+
+        final JMenuItem exitItem = new JMenuItem("Exit");
+        exitItem.setMnemonic(KeyEvent.VK_X);
+
         newGameItem.addActionListener(e -> {
             myBoard.newGame();
             myTimer.start();
         });
+        pauseGameItem.addActionListener(theEvent -> togglePauseResume());
+        exitItem.addActionListener(theEvent ->
+                myFrame.dispatchEvent(new WindowEvent(myFrame, WindowEvent.WINDOW_CLOSING)));
 
         gameMenu.add(newGameItem);
+        gameMenu.add(pauseGameItem);
+        gameMenu.addSeparator();
+        gameMenu.add(exitItem);
+
         return gameMenu;
     }
 
     private JMenu buildHelpMenu() {
         final JMenu helpMenu = new JMenu("Help");
+        helpMenu.setMnemonic(KeyEvent.VK_H);
 
-        final JMenuItem howToPlayItem = new JMenuItem("How to Play");
+        final JMenuItem howToPlayItem = new JMenuItem(MENULABEL_HOWTOPLAY);
+        howToPlayItem.setMnemonic(KeyEvent.VK_T);
+
+        final JMenuItem aboutItem = new JMenuItem(MENULABEL_ABOUT);
+        aboutItem.setMnemonic(KeyEvent.VK_A);
+
         howToPlayItem.addActionListener(e -> showHowToPlayDialog());
+        aboutItem.addActionListener(e -> showAboutDialog());
 
         helpMenu.add(howToPlayItem);
+        helpMenu.add(aboutItem);
         return helpMenu;
     }
 
     /**
      * Lays out the components for the Tetris GUI.
+     * Sets the layout for the board, next piece, and scoreboard panels.
      */
     private void layoutComponents() {
         setLayout(new BorderLayout());
@@ -121,6 +153,7 @@ public final class TetrisGUI extends JPanel {
 
     /**
      * Adds necessary listeners to the GUI.
+     * Includes the key listener for user input.
      */
     private void addListeners() {
         // KeyListener for user input
@@ -131,16 +164,67 @@ public final class TetrisGUI extends JPanel {
 
     /**
      * Adds property change listeners to the Board.
+     * Stops the game timer when the game is over.
      */
     private void addPropertyChangeListeners() {
         myBoard.addPropertyChangeListener("gameOver", evt -> myTimer.stop());
     }
 
     /**
+     * Starts a new game and notifies the user.
+     * This method is called when a new game is started from the menu.
+     */
+    private void startNewGame() {
+        JOptionPane.showMessageDialog(myFrame, "Starting a new game!");
+    }
+
+    /**
+     * Toggles between pausing and resuming the game and notifies the user.
+     * This method is triggered from the menu.
+     */
+    private void togglePauseResume() {
+        JOptionPane.showMessageDialog(myFrame, "Toggling pause/resume!");
+    }
+
+    /**
      * Displays a dialog with instructions on how to play the game.
+     * This method is triggered when "How to Play" is selected from the help menu.
      */
     private void showHowToPlayDialog() {
-        // Implementation for showing the "How to Play" dialog
+        JOptionPane.showMessageDialog(
+                myFrame,
+                """
+                        How to Play:
+                        1. Use arrow keys to move and rotate blocks.
+                        2. Complete rows to clear them.
+                        3. The game ends when blocks reach the top.
+                        """,
+                MENULABEL_HOWTOPLAY,
+                JOptionPane.INFORMATION_MESSAGE
+        );
+    }
+
+    /**
+     * Displays a dialog with information about the game.
+     * This method is triggered when "About" is selected from the help menu.
+     */
+    private void showAboutDialog() {
+        JOptionPane.showMessageDialog(
+                myFrame,
+                """
+                        Tetris Game v1.0
+                        Created with Swing.
+                        
+                        Developed by:
+                        Abdulrahman Hassan
+                        Preston Sia
+                        Khalid Rashid
+                        Balkirat Singh
+                        
+                        Group 6""",
+                MENULABEL_ABOUT,
+                JOptionPane.INFORMATION_MESSAGE
+        );
     }
 
     /**

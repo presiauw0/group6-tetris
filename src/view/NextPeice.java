@@ -1,4 +1,5 @@
 package view;
+import static model.MyBoard.PROPERTY_NEXT_PIECE_CHANGE;
 
 
 import java.awt.BasicStroke;
@@ -10,7 +11,8 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
-import javax.swing.JFrame;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import javax.swing.JPanel;
 import model.Point;
 import model.TetrisPiece;
@@ -24,7 +26,7 @@ import view.colors.TetrisColorSchemeDefault;
  * @author Khalid Rashid
  * @version 1.1
  */
-public class NextPeice extends JPanel {
+public class NextPeice extends JPanel implements PropertyChangeListener {
 
     /** Size of a single block in pixels. */
     private static final int BLOCK_SIZE = 20;
@@ -39,7 +41,7 @@ public class NextPeice extends JPanel {
     private static final int HEIGHT = 150;
 
     /** instantiates the next tetris piece. */
-    private final TetrisPiece myNextPiece;
+    private TetrisPiece myNextPiece;
     /**
      * Store a color scheme to use for the Tetrominos
      */
@@ -104,25 +106,18 @@ public class NextPeice extends JPanel {
         }
     }
 
-    /** Creates and displays the GUI. */
-    private static void createAndShowGUI() {
-        final JFrame window = new JFrame("Next Tetris Piece");
-        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        final NextPeice nextPeicePanel = new NextPeice();
-        window.setContentPane(nextPeicePanel);
-
-        window.pack();
-        window.setVisible(true);
-    }
-
     /**
-     * Create a JFrame to display to the window.
+     * A property change Event that handles replacing the NextTetris Piece.
      *
-     * @param theArgs Command line arguments, ignored.
+     * @param theEvent A PropertyChangeEvent object describing the event source
+     *          and the property that has changed.
      */
-    public static void main(final String[] theArgs) {
-        javax.swing.SwingUtilities.invokeLater(NextPeice::createAndShowGUI);
+    @Override
+    public void propertyChange(final PropertyChangeEvent theEvent) {
+        if (PROPERTY_NEXT_PIECE_CHANGE.equals(theEvent.getPropertyName())) {
+            myNextPiece = (TetrisPiece) theEvent.getNewValue();
+            repaint();
+        }
     }
 
 }

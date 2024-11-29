@@ -14,6 +14,8 @@ import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import javax.swing.JPanel;
+import model.Board;
+import model.MyBoard;
 import model.Point;
 import model.TetrisPiece;
 import view.colors.TetrisColorScheme;
@@ -57,6 +59,8 @@ public class NextPeice extends JPanel implements PropertyChangeListener {
         myColorScheme = new TetrisColorSchemeDefault();
         // pass in the next test piece instead of T.
         myNextPiece = TetrisPiece.T;
+        final MyBoard ourBoard = Board.getInstance();
+        ourBoard.addPropertyChangeListener(this);
     }
 
     /**

@@ -3,18 +3,17 @@ package view;
 import java.awt.BorderLayout;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
+import java.awt.event.WindowEvent;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 import model.Board;
-import model.MyBoard;
-import java.awt.event.WindowEvent;
-import javax.swing.JOptionPane;
+
+
 
 /**
  * The graphical user interface for the Tetris game.
@@ -25,6 +24,9 @@ import javax.swing.JOptionPane;
  * @version Autumn 2024
  */
 public final class TetrisGUI extends JPanel {
+    /** The interval in milliseconds for the game timer. */
+    private static final int TIMER_INTERVAL = 500;
+
     /** Lable for the how to play dialog box */
     private static final String MENULABEL_HOWTOPLAY = "How to Play";
 
@@ -56,20 +58,55 @@ public final class TetrisGUI extends JPanel {
      */
     public TetrisGUI(final String theTitle) {
         super();
-        myFrame = new JFrame(theTitle);
-        myBoard = Board.getInstance(); // Factory method
+        myFrame = createMainFrame(theTitle);
+        myBoard = Board.getInstance();
+        myTimer = createGameTimer();
 
         myBoardPanel = new TetrisBoardPanel();
         myNextPeicePanel = new NextPeice();
         myScoreBoardPanel = new ScoreBoard();
+        initializeComponents();
+    }
 
-        // Timer ticks every 500 ms and calls step() on the Board
-        myTimer = new Timer(500, e -> myBoard.step());
+    /**
+     * Creates the main JFrame for the game.
+     *
+     * @param theTitle the title of the frame.
+     * @return the configured JFrame.
+     */
+    private JFrame createMainFrame(final String theTitle) {
+        final JFrame frame = new JFrame(theTitle);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setVisible(true);
+        return frame;
+    }
 
+    /**
+     * Creates the game timer.
+     *
+     * @return the game timer.
+     */
+    private Timer createGameTimer() {
+        return new Timer(TIMER_INTERVAL, e -> myBoard.step());
+    }
+
+    /**
+     * Sets up the components of the GUI.
+     */
+    private void initializeComponents() {
+        setupFrame();
         buildMenu();
         layoutComponents();
         addListeners();
         addPropertyChangeListeners();
+    }
+
+    /**
+     * Configures the JFrame's basic settings.
+     */
+    private void setupFrame() {
+        myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        myFrame.setVisible(true);
     }
 
     /**

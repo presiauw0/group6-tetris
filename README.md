@@ -1,6 +1,4 @@
-# TCSS305-Group6-Tetris
-
-## TCSS 305 Tetris - SPRINT 2
+# TCSS305-Group6-Tetris-Sprint2
 
 ## Sprint 2 Contribution
 

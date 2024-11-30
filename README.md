@@ -2,7 +2,7 @@
 
 ## Sprint 2 Contribution
 
-- **Abdulrahman Hassan**  - 
+- **Abdulrahman Hassan**  - Worked in updating the GUI to add things such as PropertyChangeListener and Timer that ticks every 500 milliseconds with an ActionListener that calls to the Board.step() method.
 
 
 - **Khalid Rashid**  -

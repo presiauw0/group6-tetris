@@ -39,6 +39,6 @@ https://docs.google.com/document/d/18yKiRCG6CYQYDxzpUA03e5I1bip3m8ceQb8LAv9O7XE/
 - **In-Person**: Our first major meeting was done in person to assign a rough outline of the roles
 
 ## Sprint 2 Comments
-- **Issue 1**: 
-- **Idea 1**: 
-- **Code Weirdness 1**:
+- **Issue 1**: In the TetrisBoardPanel we have a small checkstyle warning in which we have 12 exectuable statments instead of the 10. We will look to fix this in the 3rd sprint.
+- **Idea 1**: Khalid would like to tinker around with the round edges that we see in the mac version when playing tetris (just something cosmetic).
+- **Code Weirdness 1**: N/A

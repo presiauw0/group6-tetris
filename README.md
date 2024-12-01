@@ -8,7 +8,14 @@
 - **Khalid Rashid**  -
 
 
-- **Preston Sia**  -
+- **Preston Sia**  - Focused on the Tetris Board, implementing PropertyChangeListener
+to listen for events from the board model. There was initally some miscommunication and
+ambiguity with the the property changes, which we eventually sorted out after working
+with the Tetris JPanel and Board class a little bit. The board listens for events
+when the list of frozen pieces changes, when the active pieces change, and when
+the state of the game (game over) changes. This panel acts on property changes to
+draw the Tetris board and draws the board for actual gameplay. Additionally, I also
+fixed a few issues with TetrisGUI.
 
 
 - **Balkirat Singh**  - I worked on implementing the functionality for the primary model object (Board) by adding a factory method and making sure everything followed the interface defined in the Model. I added a KeyListener to handle piece movement (left, right, down, drop, and rotate), making sure it only interacted with the Board API and didn’t directly change the GUI. I also added a listener to the "New Game" menu button so it resets the Board and starts the timer when selected. I tinkered with checkstyle validation in my branch, though we ultimately decided to go with another group member’s version. On top of that, I recorded the minutes for the first meeting and created the template for the readme.md.

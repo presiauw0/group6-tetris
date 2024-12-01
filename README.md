@@ -11,7 +11,7 @@
 - **Preston Sia**  -
 
 
-- **Balkirat Singh**  -
+- **Balkirat Singh**  - I worked on implementing the functionality for the primary model object (Board) by adding a factory method and making sure everything followed the interface defined in the Model. I added a KeyListener to handle piece movement (left, right, down, drop, and rotate), making sure it only interacted with the Board API and didn’t directly change the GUI. I also added a listener to the "New Game" menu button so it resets the Board and starts the timer when selected. I tinkered with checkstyle validation in my branch, though we ultimately decided to go with another group member’s version. On top of that, I recorded the minutes for the first meeting and created the template for the readme.md.
 
 ## Sprint 2 Meetings
 

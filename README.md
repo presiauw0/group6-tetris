@@ -20,10 +20,10 @@ Link to Google Doc on Meeting Notes for Sprint 2:
 https://docs.google.com/document/d/18yKiRCG6CYQYDxzpUA03e5I1bip3m8ceQb8LAv9O7XE/edit?usp=sharing
 
 ### Other Meetings
-- **When**:
-- **Where**:
-- **How**:
-- **What**:
+- **When**: 2:15 pm - 3:15 pm, November 29, 2024
+- **Where**: Discord (Online)
+- **How**: Voice Call
+- **What**: We discussed changes we made to the GUI, TetrisPanel, and suggested any improvements we can make. 
 
 ### Sprint 2 Communication
 

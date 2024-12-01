@@ -5,7 +5,7 @@
 - **Abdulrahman Hassan**  - Worked in updating the GUI to add things such as PropertyChangeListener and Timer that ticks every 500 milliseconds with an ActionListener that calls to the Board.step() method.
 
 
-- **Khalid Rashid**  -
+- **Khalid Rashid**  - I worked on the Model update, I implemented property Change Support in the Board and Board interface. I reviewed the Board Class, determining when the state was changed, and what state changed, and then fired Property changes Accordingly. I also altered the Board class to implement the singleton design pattern. I dealt with issues that arose in the sandbox class, and as a result, I edited it to retrieve the Instance of the Board. I also implemented the Property Change Listener in the NextPiece Panel, adjusting it so that it draws the Next Tetris Piece.   
 
 
 - **Preston Sia**  - Focused on the Tetris Board, implementing PropertyChangeListener

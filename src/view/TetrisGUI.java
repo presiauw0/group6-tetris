@@ -162,6 +162,7 @@ public final class TetrisGUI extends JPanel {
         myFrame.pack();
         myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         myFrame.setVisible(true);
+        myFrame.setResizable(false);
     }
 
     /**

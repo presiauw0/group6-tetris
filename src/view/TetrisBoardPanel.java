@@ -217,7 +217,7 @@ public class TetrisBoardPanel extends JPanel
         for (int i = 0; i < myBoardWidth; i++) {
             for (int j = 0; j < myBoardHeight; j++) {
                 final Shape gridRect = new Rectangle2D.Double(
-                        i * myBlockWidthPX, j * myBoardHeight,
+                        i * myBlockWidthPX, j * myBlockWidthPX,
                         myBlockWidthPX, myBlockWidthPX
                 );
                 theGraphics.draw(gridRect);

@@ -16,7 +16,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 import model.Block;
 import model.Board;
@@ -35,7 +34,8 @@ import view.colors.TetrisColorSchemeDefault;
  * @author Preston Sia
  * @version F2024_001
  */
-public class TetrisBoardPanel extends JPanel implements PropertyChangeListener {
+public class TetrisBoardPanel extends JPanel
+        implements PropertyChangeListener, ITetrisBoardPanel {
     /**
      * Default multiple for the width of the panel.
      * Multiply the block side length by this amount.
@@ -51,7 +51,7 @@ public class TetrisBoardPanel extends JPanel implements PropertyChangeListener {
     /**
      * Default block side length in pixels.
      */
-    public static final int DEFAULT_BLOCK_WIDTH = 20;
+    public static final int DEFAULT_BLOCK_WIDTH = 24;
 
     /**
      * Default stroke/border width.
@@ -95,12 +95,6 @@ public class TetrisBoardPanel extends JPanel implements PropertyChangeListener {
     private List<Block[]> myFrozenBlocks;
 
     /**
-     * Store a list of Tetris pieces to draw
-     * for debugging purposes.
-     */
-    private final List<MyMovableTetrisPiece> myTetrisPiecesDbg;
-
-    /**
      * Boolean value to indicate whether to show gridlines.
      */
     private boolean myShowGridLines;
@@ -111,14 +105,13 @@ public class TetrisBoardPanel extends JPanel implements PropertyChangeListener {
     private final TetrisColorScheme myColorScheme;
 
 
-    //TODO remove constructors for setting width and height
-    //  must retrieve from board
     /**
      * Constructor to configure the Tetris board
      * using the defaults specified in the static fields.
      */
     public TetrisBoardPanel() {
-        this(DEFAULT_BLOCK_WIDTH, DEFAULT_BOARD_WIDTH, DEFAULT_BOARD_HEIGHT);
+        this(DEFAULT_BLOCK_WIDTH,
+                Board.getInstance().getWidth(), Board.getInstance().getHeight());
     }
 
     /**
@@ -129,7 +122,8 @@ public class TetrisBoardPanel extends JPanel implements PropertyChangeListener {
      * @param theBlockLengthPX Length of a block in pixels
      */
     public TetrisBoardPanel(final int theBlockLengthPX) {
-        this(theBlockLengthPX, DEFAULT_BOARD_WIDTH, DEFAULT_BOARD_HEIGHT);
+        this(theBlockLengthPX,
+                Board.getInstance().getWidth(), Board.getInstance().getHeight());
     }
 
     /**
@@ -141,7 +135,7 @@ public class TetrisBoardPanel extends JPanel implements PropertyChangeListener {
      * @param theBoardWidth Width of the board in blocks
      * @param theBoardHeight Height of the board in blocks
      */
-    public TetrisBoardPanel(final int theBlockLengthPX,
+    private TetrisBoardPanel(final int theBlockLengthPX,
                             final int theBoardWidth, final int theBoardHeight) {
         super();
 
@@ -150,24 +144,36 @@ public class TetrisBoardPanel extends JPanel implements PropertyChangeListener {
         myBoardHeight = theBoardHeight;
 
         myColorScheme = new TetrisColorSchemeDefault();
-        myTetrisPiecesDbg = new ArrayList<>();
 
-        myShowGridLines = false;
-
-        myGameOver = true;
-
-        layoutComponents();
-        drawPiecesDbg();
+        callConstructorHelperMethod();
 
         final MyBoard ourBoard = Board.getInstance();
         ourBoard.addPropertyChangeListener(this);
     }
 
     /**
+     * Helper method to call other needed helper methods
+     * and set mutable state defaults.
+     */
+    private void callConstructorHelperMethod() {
+        myShowGridLines = false;
+        myGameOver = true;
+
+        layoutComponents();
+    }
+
+
+    @Override
+    public void setGridlines(final boolean theValue) {
+        myShowGridLines = theValue;
+    }
+
+
+    /**
      * Configure the layout the components of the Tetris board
      */
     private void layoutComponents() {
-        setBackground(DEFAULT_BG_COLOR);
+        setBackground(TetrisColorSchemeDefault.BACKGROUND_COLOR);
         setPreferredSize(new Dimension(myBlockWidthPX * myBoardWidth,
                 myBlockWidthPX * myBoardHeight));
     }
@@ -220,7 +226,30 @@ public class TetrisBoardPanel extends JPanel implements PropertyChangeListener {
     }
 
     private void paintHelperDrawPiecesDebug(final Graphics2D theGraphics) {
-        for (final MyMovableTetrisPiece piece : myTetrisPiecesDbg) {
+        // store all pieces here so we can iterate over them
+        final List<MyMovableTetrisPiece> movablePieces = new ArrayList<>();
+
+        final TetrisPiece[] pieces = {
+            TetrisPiece.I,
+            TetrisPiece.J,
+            TetrisPiece.L,
+            TetrisPiece.O,
+            TetrisPiece.S,
+            TetrisPiece.T,
+            TetrisPiece.Z
+        };
+
+        // make a static constant?
+        final int pieceOffset = 3;
+
+        for (int i = 0; i < pieces.length; i++) {
+            movablePieces.add(new MovableTetrisPiece(
+                    pieces[i],
+                    new Point(i, myBoardHeight - pieceOffset - (i * pieceOffset))
+            ));
+        }
+
+        for (final MyMovableTetrisPiece piece : movablePieces) {
             final Point[] piecePoints = piece.getBoardPoints();
 
             for (final Point block : piecePoints) {
@@ -284,40 +313,6 @@ public class TetrisBoardPanel extends JPanel implements PropertyChangeListener {
                 }
             }
         }
-    }
-
-    /**
-     * Add Tetris pieces to drawing pipeling for display
-     * when debugging.
-     */
-    private void drawPiecesDbg() {
-        // store all pieces here so we can iterate over them
-        final TetrisPiece[] pieces = {
-            TetrisPiece.I,
-            TetrisPiece.J,
-            TetrisPiece.L,
-            TetrisPiece.O,
-            TetrisPiece.S,
-            TetrisPiece.T,
-            TetrisPiece.Z
-        };
-
-        // make a static constant?
-        final int pieceOffset = 3;
-
-        for (int i = 0; i < pieces.length; i++) {
-            myTetrisPiecesDbg.add(new MovableTetrisPiece(
-                    pieces[i],
-                    new Point(i, myBoardHeight - pieceOffset - (i * pieceOffset))
-            ));
-        }
-    }
-
-    /**
-     * Toggle gridlines on and off.
-     */
-    private void setGridlines(final boolean theValue) {
-        myShowGridLines = theValue;
     }
 
     /**
@@ -388,28 +383,5 @@ public class TetrisBoardPanel extends JPanel implements PropertyChangeListener {
         }
 
         repaint();
-    }
-
-
-    // *** TEMPORARY FOR TESTING -- REMOVE WHEN COMPLETE ***
-
-    /**
-     * Generate GUI for testing purposes.
-     */
-    public static void generateGui() {
-        final TetrisBoardPanel mainPanel = new TetrisBoardPanel();
-
-        final JFrame window = new JFrame("Test Tetris Board Panel");
-        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        window.setContentPane(mainPanel);
-        window.pack();
-        window.setVisible(true);
-    }
-
-    /**
-     * Creates a window to test the Tetris panel.
-     */
-    public static void main(final String[] theArgs) {
-        javax.swing.SwingUtilities.invokeLater(TetrisBoardPanel::generateGui);
     }
 }

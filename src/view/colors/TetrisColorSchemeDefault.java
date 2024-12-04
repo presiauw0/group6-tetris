@@ -26,6 +26,11 @@ public final class TetrisColorSchemeDefault implements TetrisColorScheme {
     public static final Color FALLBACK_COLOR = Color.black;
 
     /**
+     * Color to be used on the background of the board.
+     */
+    public static final Color BACKGROUND_COLOR = new Color(204, 0, 0);
+
+    /**
      * Default color for I pieces.
      */
     public static final Color COLOR_I = Color.cyan;

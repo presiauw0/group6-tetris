@@ -2,11 +2,15 @@ package view;
 
 import static model.MyBoard.PROPERTY_GAME_OVER_STATE;
 
+
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
+import java.beans.PropertyChangeEvent;
 import javax.swing.JFrame;
+import javax.swing.JLayeredPane;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -15,9 +19,6 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 import model.Board;
 import model.MyBoard;
-import javax.swing.JLayeredPane;
-import java.awt.Dimension;
-import java.beans.PropertyChangeEvent;
 
 /**
  * The graphical user interface for the Tetris game.

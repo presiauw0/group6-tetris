@@ -66,7 +66,7 @@ public final class PauseEndPanel extends JPanel {
     }
 
     private String getGameState() {
-        String result = null;
+        final String result;
         if (myGameOver) {
             result = "Game Over";
         } else {
@@ -78,13 +78,15 @@ public final class PauseEndPanel extends JPanel {
     @Override
     protected void paintComponent(final Graphics theGraphics) {
         super.paintComponent(theGraphics);
+        final int opacity = 150;
+        final int fontSize = 35;
         if (myGameOver || myPaused) {
             final Graphics2D g2d = (Graphics2D) theGraphics;
-            g2d.setColor(new Color(0, 0, 0, 150)); // Semi-transparent black overlay
+            g2d.setColor(new Color(0, 0, 0, opacity));
             g2d.fillRect(0, 0, getWidth(), getHeight());
 
             g2d.setColor(Color.WHITE);
-            g2d.setFont(new Font("Arial", Font.BOLD, 35));
+            g2d.setFont(new Font("Arial", Font.BOLD, fontSize));
             final String message = getGameState();
             final FontMetrics metrics = g2d.getFontMetrics();
             final int x = (getWidth() - metrics.stringWidth(message)) / 2;

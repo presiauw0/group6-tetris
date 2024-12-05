@@ -15,6 +15,9 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 import model.Board;
 import model.MyBoard;
+import javax.swing.JLayeredPane;
+import java.awt.Dimension;
+import java.beans.PropertyChangeEvent;
 
 /**
  * The graphical user interface for the Tetris game.
@@ -43,6 +46,9 @@ public final class TetrisGUI extends JPanel {
     /** The Scoreboard Panel. */
     private final ScoreBoard myScoreBoardPanel;
 
+    /** The Pause and Game Over Panel. */
+    private final PauseEndPanel myPauseEndPanel;
+
     /** The main game JFrame. */
     private final JFrame myFrame;
 
@@ -68,6 +74,7 @@ public final class TetrisGUI extends JPanel {
         myBoardPanel = new TetrisBoardPanel();
         myNextPeicePanel = new NextPeice();
         myScoreBoardPanel = new ScoreBoard();
+        myPauseEndPanel = new PauseEndPanel();
 
         // Timer ticks on a certain interval and calls step() on the Board
         myTimer = new Timer(DEFAULT_TIME_DELAY, e -> myBoard.step());
@@ -107,6 +114,9 @@ public final class TetrisGUI extends JPanel {
         final JMenuItem newGameItem = new JMenuItem("New Game");
         newGameItem.setMnemonic(KeyEvent.VK_N);
 
+        final JMenuItem endGameItem = new JMenuItem("End Game");
+        endGameItem.setMnemonic(KeyEvent.VK_E);
+
         final JMenuItem pauseGameItem = new JMenuItem("Pause/Resume");
         pauseGameItem.setMnemonic(KeyEvent.VK_P);
 
@@ -114,11 +124,13 @@ public final class TetrisGUI extends JPanel {
         exitItem.setMnemonic(KeyEvent.VK_X);
 
         newGameItem.addActionListener(e -> startNewGame());
+        endGameItem.addActionListener(e -> endGame());
         pauseGameItem.addActionListener(theEvent -> togglePauseResume());
         exitItem.addActionListener(theEvent ->
                 myFrame.dispatchEvent(new WindowEvent(myFrame, WindowEvent.WINDOW_CLOSING)));
 
         gameMenu.add(newGameItem);
+        gameMenu.add(endGameItem);
         gameMenu.add(pauseGameItem);
         gameMenu.addSeparator();
         gameMenu.add(exitItem);
@@ -147,10 +159,22 @@ public final class TetrisGUI extends JPanel {
     /**
      * Lays out the components for the Tetris GUI.
      * Sets the layout for the board, next piece, and scoreboard panels.
+     * Uses a JLayoredPanel to handel displaying the puse and game over message.
      */
     private void layoutComponents() {
+
+        final Dimension boardSize = myBoardPanel.getPreferredSize();
+
+        final JLayeredPane layeredPane = new JLayeredPane();
+        layeredPane.setPreferredSize(boardSize);
+
+        myBoardPanel.setBounds(0, 0, boardSize.width, boardSize.height);
+        layeredPane.add(myBoardPanel, JLayeredPane.DEFAULT_LAYER);
+        myPauseEndPanel.setBounds(0, 0, boardSize.width, boardSize.height);
+        layeredPane.add(myPauseEndPanel, JLayeredPane.PALETTE_LAYER);
+
         setLayout(new BorderLayout());
-        add(myBoardPanel, BorderLayout.CENTER);
+        add(layeredPane, BorderLayout.CENTER);
 
         final JPanel rightPanel = new JPanel(new BorderLayout());
         rightPanel.add(myNextPeicePanel, BorderLayout.NORTH);
@@ -179,12 +203,20 @@ public final class TetrisGUI extends JPanel {
     /**
      * Adds property change listeners to the Board.
      * Stops the game timer when the game is over.
+     * displays a game over message.
      */
     private void addPropertyChangeListeners() {
-        myBoard.addPropertyChangeListener(PROPERTY_GAME_OVER_STATE, evt -> {
-            myTimer.stop();
-            myGameOver = true;
-        });
+        myBoard.addPropertyChangeListener(PROPERTY_GAME_OVER_STATE, this::gameOverHelper);
+    }
+
+    /**
+     * Helper method to hold logic for the lambda addPropertyChangeListner.
+     */
+    private void gameOverHelper(final PropertyChangeEvent theEvent) {
+        final boolean isGameOver = (boolean) theEvent.getNewValue();
+        myTimer.stop();
+        myGameOver = true;
+        myPauseEndPanel.setGameOver(isGameOver);
     }
 
     /**
@@ -192,9 +224,23 @@ public final class TetrisGUI extends JPanel {
      * This method is called when a new game is started from the menu.
      */
     private void startNewGame() {
-        myBoard.newGame();
-        myTimer.start();
-        myGameOver = false;
+        if (myGameOver) {
+            myBoard.newGame();
+            myTimer.start();
+            myGameOver = false;
+        }
+    }
+
+    /**
+     * Starts a new game and notifies the user.
+     * This method is called when a new game is started from the menu.
+     */
+    private void endGame() {
+        if (!myGameOver) {
+            myTimer.stop();
+            myGameOver = true;
+            myPauseEndPanel.setGameOver(true);
+        }
     }
 
     /**
@@ -205,8 +251,10 @@ public final class TetrisGUI extends JPanel {
         if (!myGameOver) {
             if (myTimer.isRunning()) {
                 myTimer.stop();
+                myPauseEndPanel.setPaused(true);
             } else {
                 myTimer.start();
+                myPauseEndPanel.setPaused(false);
             }
         }
 
@@ -280,6 +328,8 @@ public final class TetrisGUI extends JPanel {
 
                 if (theEvent.getKeyCode() == KeyEvent.VK_P) {
                     togglePauseResume();
+                } else if (theEvent.getKeyCode() == KeyEvent.VK_E) {
+                    endGame();
                 }
             }
 

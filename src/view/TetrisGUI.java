@@ -1,6 +1,8 @@
 package view;
 
 import static model.MyBoard.PROPERTY_GAME_OVER_STATE;
+import static model.MyBoard.PROPERTY_FROZEN_PIECES_CHANGE;
+import static model.MyBoard.PROPERTY_CLEAR_ROW;
 
 
 import java.awt.BorderLayout;
@@ -218,6 +220,14 @@ public final class TetrisGUI extends JPanel {
      */
     private void addPropertyChangeListeners() {
         myBoard.addPropertyChangeListener(PROPERTY_GAME_OVER_STATE, this::gameOverHelper);
+        // Listen for a piece freezing in place
+        myBoard.addPropertyChangeListener(PROPERTY_FROZEN_PIECES_CHANGE, evt -> myScoreBoardPanel.pieceFrozen());
+
+        // Listen for lines cleared
+        myBoard.addPropertyChangeListener(PROPERTY_CLEAR_ROW, evt -> {
+            final int linesCleared = (int) evt.getNewValue();
+            myScoreBoardPanel.updateScore(linesCleared);
+        });
     }
 
     /**
@@ -289,6 +299,13 @@ public final class TetrisGUI extends JPanel {
                         1. Use arrow keys to move and rotate blocks.
                         2. Complete rows to clear them.
                         3. The game ends when blocks reach the top.
+                        
+                        Scoring:
+                        * 4 points per frozen piece.
+                        * 1 line = 40 points * level.
+                        * 2 lines = 100 points * level.
+                        * 3 lines = 300 points * level.
+                        * 4 lines = 1200 points * level.
                         """,
                 MENULABEL_HOWTOPLAY,
                 JOptionPane.INFORMATION_MESSAGE

@@ -1,43 +1,40 @@
 package view;
 
-
 import java.awt.Color;
 import java.awt.GridLayout;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.border.Border;
 
 /**
  * Represents the scoreboard panel for the Tetris game.
  * This panel displays game controls and score details.
  * The panel has a green background and uses a BorderLayout.
  *
- * @author Balkirat Singh
+ * @author Balkirat Singh, Abdulrahman Hassan
  * @version 1.1
  */
 public class ScoreBoard extends JPanel {
-    /**
-     *  Constant for the amount of rows needed in Control directions
-     */
-    private static final int ROW = 7;
+    private final JLabel scoreLabel;
+    private final JLabel linesLabel;
+    private final JLabel levelLabel;
+    private final JLabel nextLevelLabel;
 
-    /**
-     *   Constant for the amount of columns needed in Control directions
-     */
-    private static final int COLS = 1;
-
-    /**
-     *   Constant for the amount of rows needed in Control directions
-     */
-    private static final int ROW_SCORE = 5;
-
+    private final ScoringSystem scoringSystem;
 
     /**
      * Constructs the scoreboard panel.
      */
     public ScoreBoard() {
         super();
+        scoringSystem = new ScoringSystem();
+        scoreLabel = new JLabel("Score: 0", SwingConstants.CENTER);
+        linesLabel = new JLabel("Lines: 0", SwingConstants.CENTER);
+        levelLabel = new JLabel("Level: 1", SwingConstants.CENTER);
+        nextLevelLabel = new JLabel("Next level in 5 lines", SwingConstants.CENTER);
         initialize();
     }
 
@@ -46,61 +43,35 @@ public class ScoreBoard extends JPanel {
      */
     private void initialize() {
         setBackground(Color.GREEN);
+        setLayout(new GridLayout(4, 1));
 
-        setLayout(new GridLayout(2, 1));
+        add(scoreLabel);
+        add(linesLabel);
+        add(levelLabel);
+        add(nextLevelLabel);
 
-        final JPanel controlsPanel = createControlsPanel();
-        final JPanel scorePanel = createScorePanel();
-
-        add(controlsPanel);
-        add(scorePanel);
+        setBorder(BorderFactory.createLineBorder(Color.BLACK));
     }
 
     /**
-     * Creates the game controls panel.
+     * Updates the displayed score, total lines cleared, current level, and lines remaining
+     * until the next level.
      *
-     * @return the game controls panel.
+     * @param linesCleared the number of lines cleared in the current move
      */
-    private JPanel createControlsPanel() {
-        final JPanel controlsPanel = new JPanel();
-
-        controlsPanel.setLayout(new GridLayout(ROW, COLS));
-
-        controlsPanel.setOpaque(false);
-
-        controlsPanel.add(new JLabel("Move Left: left or D/d key"));
-        controlsPanel.add(new JLabel("Move Right: right or A/a key"));
-        controlsPanel.add(new JLabel("Move Down: down or S/s key"));
-        controlsPanel.add(new JLabel("Rotate cw: up or W/w key"));
-        controlsPanel.add(new JLabel("Drop: space"));
-        controlsPanel.add(new JLabel("Pause: P/p"));
-        controlsPanel.add(new JLabel("Mute: M/m"));
-
-        controlsPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-
-        return controlsPanel;
+    public void updateScore(final int linesCleared) {
+        scoringSystem.linesCleared(linesCleared);
+        scoreLabel.setText("Score: " + scoringSystem.getScore());
+        linesLabel.setText("Lines: " + scoringSystem.getTotalLinesCleared());
+        levelLabel.setText("Level: " + scoringSystem.getLevel());
+        nextLevelLabel.setText("Next level in " + scoringSystem.getNextLevelLines() + " lines");
     }
 
     /**
-     * Creates the score details panel.
-     *
-     * @return the score details panel.
+     * Updates the score when a piece is frozen in place, adding 4 points to the score.
      */
-    private JPanel createScorePanel() {
-        final JPanel scorePanel = new JPanel();
-        scorePanel.setLayout(new GridLayout(ROW_SCORE, COLS));
-
-        scorePanel.setOpaque(false);
-
-        scorePanel.add(new JLabel("Score: 0", SwingConstants.CENTER));
-        scorePanel.add(new JLabel("Lines: 0", SwingConstants.CENTER));
-        scorePanel.add(new JLabel("Level: 1", SwingConstants.CENTER));
-        scorePanel.add(new JLabel("Next level in 5 lines", SwingConstants.CENTER));
-
-        scorePanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-
-        return scorePanel;
+    public void pieceFrozen() {
+        scoringSystem.pieceFrozen();
+        scoreLabel.setText("Score: " + scoringSystem.getScore());
     }
-
-
 }

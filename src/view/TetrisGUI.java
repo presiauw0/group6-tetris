@@ -114,6 +114,7 @@ public final class TetrisGUI extends JPanel {
     private void buildMenu() {
         final JMenuBar menuBar = new JMenuBar();
         menuBar.add(buildGameMenu());
+        menuBar.add(buildOptionsMenu());
         menuBar.add(buildHelpMenu());
         myFrame.setJMenuBar(menuBar);
     }
@@ -148,6 +149,30 @@ public final class TetrisGUI extends JPanel {
         gameMenu.add(exitItem);
 
         return gameMenu;
+    }
+
+    private JMenu buildOptionsMenu() {
+        final JMenu optionsMenu = new JMenu("Options");
+        optionsMenu.setMnemonic(KeyEvent.VK_O);
+
+        final JMenuItem toggleGridLines = new JMenuItem("Toggle Gridlines");
+        toggleGridLines.setMnemonic(KeyEvent.VK_T);
+
+        final JMenuItem toggleGhostPiece = new JMenuItem("Toggle Ghost Piece");
+        toggleGhostPiece.setMnemonic(KeyEvent.VK_O);
+
+        toggleGridLines.addActionListener(theEvent -> myBoardPanel.setGridlines(
+                !myBoardPanel.getGridlines()
+        ));
+
+        toggleGhostPiece.addActionListener(theEvent -> myBoardPanel.setGhostPieceState(
+                !myBoardPanel.getGhostPieceState()
+        ));
+
+        optionsMenu.add(toggleGridLines);
+        optionsMenu.add(toggleGhostPiece);
+
+        return optionsMenu;
     }
 
     private JMenu buildHelpMenu() {

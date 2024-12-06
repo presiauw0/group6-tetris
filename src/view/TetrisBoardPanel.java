@@ -174,9 +174,28 @@ public class TetrisBoardPanel extends JPanel
     }
 
 
+    // *** GETTERS AND SETTERS ***
+
+    @Override
+    public boolean getGridlines() {
+        return myShowGridLines;
+    }
+
     @Override
     public void setGridlines(final boolean theValue) {
         myShowGridLines = theValue;
+        repaint();
+    }
+
+    @Override
+    public boolean getGhostPieceState() {
+        return myShowGhostPiece;
+    }
+
+    @Override
+    public void setGhostPieceState(final boolean theValue) {
+        myShowGhostPiece = theValue;
+        repaint();
     }
 
 
@@ -200,18 +219,13 @@ public class TetrisBoardPanel extends JPanel
                             RenderingHints.VALUE_ANTIALIAS_ON);
 
         // *** CODE FOR TETROMINOS ***
-        // TODO Tetris pieces from sprint1 are now considered
-        //  a debugging feature and displayed as a spash screen.
-        //  this needs to be changed later.
-        if (myGameOver) {
-            paintHelperDrawPiecesDebug(g2d);
-        } else {
-            paintHelperDrawGamePiece(g2d);
-            paintHelperDrawGameFrozen(g2d);
+        // note - code for game splash and game over has been moved to PauseEndPanel
 
-            if (myShowGhostPiece) {
-                paintHelperGhostPiece(g2d);
-            }
+        paintHelperDrawGamePiece(g2d);
+        paintHelperDrawGameFrozen(g2d);
+
+        if (myShowGhostPiece) {
+            paintHelperGhostPiece(g2d);
         }
 
         // *** CODE FOR GRIDLINES ***
@@ -396,7 +410,7 @@ public class TetrisBoardPanel extends JPanel
             repaint();
         } else {
             myGameOver = true;
-            // TODO Display something when the game is over
+
             repaint();
         }
 
@@ -419,7 +433,10 @@ public class TetrisBoardPanel extends JPanel
     private void propFrozenPieceChange(final List<Block[]> theBlocks) {
         if (theBlocks != null) {
             myFrozenBlocks = theBlocks;
-            myCurrentPiece = null; // remove current piece, will hopefully remove ghost pieces
+
+            // remove current piece and ghost piece, will hopefully remove latent pieces
+            myCurrentPiece = null;
+            myGhostPiece = null;
         }
 
         repaint();

@@ -20,6 +20,7 @@ import javax.swing.Timer;
 import model.Board;
 import model.MyBoard;
 
+
 /**
  * The graphical user interface for the Tetris game.
  * Combines the menu bar, game board, next piece preview, and scoreboard.
@@ -37,6 +38,13 @@ public final class TetrisGUI extends JPanel {
 
     /** Default Time interval for game timer in milliseconds */
     private static final int DEFAULT_TIME_DELAY = 500;
+
+    /** Fixed file path for my tetris background music  */
+    private static final String FILE_PATH =
+            "src/view/sound/m1.wav";
+
+    /** Music player for background music. */
+    private final MusicPlayer myMusicPlayer;
 
     /** The Tetris Board Panel. */
     private final TetrisBoardPanel myBoardPanel;
@@ -62,6 +70,8 @@ public final class TetrisGUI extends JPanel {
     /** Boolean value indicates if the game is over or not. */
     private boolean myGameOver;
 
+
+
     /**
      * Constructs the Tetris GUI, integrating the panels and menu bar.
      *
@@ -76,6 +86,7 @@ public final class TetrisGUI extends JPanel {
         myNextPeicePanel = new NextPeice();
         myScoreBoardPanel = new ScoreBoard();
         myPauseEndPanel = new PauseEndPanel();
+        myMusicPlayer = new MusicPlayer();
 
         // Timer ticks on a certain interval and calls step() on the Board
         myTimer = new Timer(DEFAULT_TIME_DELAY, e -> myBoard.step());
@@ -204,7 +215,6 @@ public final class TetrisGUI extends JPanel {
     /**
      * Adds property change listeners to the Board.
      * Stops the game timer when the game is over.
-     * displays a game over message.
      */
     private void addPropertyChangeListeners() {
         myBoard.addPropertyChangeListener(PROPERTY_GAME_OVER_STATE, this::gameOverHelper);
@@ -216,6 +226,7 @@ public final class TetrisGUI extends JPanel {
     private void gameOverHelper(final PropertyChangeEvent theEvent) {
         final boolean isGameOver = (boolean) theEvent.getNewValue();
         myTimer.stop();
+        myMusicPlayer.stopMusic();
         myGameOver = true;
         myPauseEndPanel.setGameOver(isGameOver);
     }
@@ -228,6 +239,7 @@ public final class TetrisGUI extends JPanel {
         if (myGameOver) {
             myBoard.newGame();
             myTimer.start();
+            myMusicPlayer.startMusic(FILE_PATH);
             myGameOver = false;
         }
     }
@@ -253,11 +265,14 @@ public final class TetrisGUI extends JPanel {
             if (myTimer.isRunning()) {
                 myTimer.stop();
                 myPauseEndPanel.setPaused(true);
+                myMusicPlayer.stopMusic();
             } else {
                 myTimer.start();
                 myPauseEndPanel.setPaused(false);
+                myMusicPlayer.startMusic(FILE_PATH);
             }
         }
+
 
     }
 

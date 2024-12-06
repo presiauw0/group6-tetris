@@ -91,8 +91,6 @@ public final class TetrisGUI extends JPanel {
         // Timer ticks on a certain interval and calls step() on the Board
         myTimer = new Timer(DEFAULT_TIME_DELAY, e -> myBoard.step());
 
-        myGameOver = true; // True if the game does not start on launch
-
         callConstructorHelperMethods();
     }
 
@@ -105,6 +103,8 @@ public final class TetrisGUI extends JPanel {
         layoutComponents();
         addListeners();
         addPropertyChangeListeners();
+        // True if the game does not start on launch
+        myGameOver = true;
     }
 
     /**
@@ -252,6 +252,7 @@ public final class TetrisGUI extends JPanel {
         if (!myGameOver) {
             myTimer.stop();
             myGameOver = true;
+            myMusicPlayer.stopMusic();
             myPauseEndPanel.setGameOver(true);
         }
     }

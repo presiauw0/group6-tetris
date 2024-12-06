@@ -95,6 +95,16 @@ public class TetrisBoardPanel extends JPanel
     private List<Block[]> myFrozenBlocks;
 
     /**
+     * Store the ghost piece.
+     */
+    private MyMovableTetrisPiece myGhostPiece;
+
+    /**
+     * Show/hide ghost piece
+     */
+    private boolean myShowGhostPiece;
+
+    /**
      * Boolean value to indicate whether to show gridlines.
      */
     private boolean myShowGridLines;
@@ -158,6 +168,7 @@ public class TetrisBoardPanel extends JPanel
     private void callConstructorHelperMethod() {
         myShowGridLines = false;
         myGameOver = true;
+        myShowGhostPiece = true;
 
         layoutComponents();
     }
@@ -197,6 +208,10 @@ public class TetrisBoardPanel extends JPanel
         } else {
             paintHelperDrawGamePiece(g2d);
             paintHelperDrawGameFrozen(g2d);
+
+            if (myShowGhostPiece) {
+                paintHelperGhostPiece(g2d);
+            }
         }
 
         // *** CODE FOR GRIDLINES ***
@@ -315,6 +330,25 @@ public class TetrisBoardPanel extends JPanel
         }
     }
 
+    private void paintHelperGhostPiece(final Graphics2D theGraphics) {
+        if (myGhostPiece != null) {
+            final Point[] piecePoints = myGhostPiece.getBoardPoints();
+
+            for (final Point block : piecePoints) {
+                final int xCoord = block.x() * myBlockWidthPX;
+                final int yCoord = (myBoardHeight - block.y() - 1) * myBlockWidthPX;
+
+                final Shape rect = new Rectangle2D.Double(
+                        xCoord, yCoord, myBlockWidthPX, myBlockWidthPX
+                );
+
+                theGraphics.setStroke(new BasicStroke(DEFAULT_STROKE));
+                theGraphics.setPaint(TetrisColorSchemeDefault.BORDER_COLOR);
+                theGraphics.draw(rect);
+            }
+        }
+    }
+
     /**
      * Get the offset used to horizontally center a Tetris piece.
      * @return The x-coordinate in blocks
@@ -373,6 +407,12 @@ public class TetrisBoardPanel extends JPanel
         if (theNewPiece != null) {
             myCurrentPiece = theNewPiece;
         }
+
+        final GhostCalc gc = new TetrisGhostCalc(
+                myFrozenBlocks, myCurrentPiece, myBoardWidth, myBoardHeight);
+
+        myGhostPiece = gc.getGhost();
+
         repaint();
     }
 

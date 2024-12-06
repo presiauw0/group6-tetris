@@ -266,6 +266,7 @@ public final class TetrisGUI extends JPanel {
             myTimer.start();
             myMusicPlayer.startMusic(FILE_PATH);
             myGameOver = false;
+            myPauseEndPanel.setPaused(false);
         }
     }
 
@@ -374,7 +375,6 @@ public final class TetrisGUI extends JPanel {
                     endGame();
                 }
             }
-
         }
     }
 }

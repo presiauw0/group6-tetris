@@ -20,7 +20,6 @@ import javax.swing.Timer;
 import model.Board;
 import model.MyBoard;
 
-
 /**
  * The graphical user interface for the Tetris game.
  * Combines the menu bar, game board, next piece preview, and scoreboard.
@@ -30,7 +29,7 @@ import model.MyBoard;
  * @version Autumn 2024
  */
 public final class TetrisGUI extends JPanel {
-    /** Lable for the how to play dialog box */
+    /** Label for the how to play dialog box */
     private static final String MENULABEL_HOWTOPLAY = "How to Play";
 
     /** Label for the about dialog box */
@@ -39,9 +38,8 @@ public final class TetrisGUI extends JPanel {
     /** Default Time interval for game timer in milliseconds */
     private static final int DEFAULT_TIME_DELAY = 500;
 
-    /** Fixed file path for my tetris background music  */
-    private static final String FILE_PATH =
-            "src/view/sound/m1.wav";
+    /** Fixed file path for my Tetris background music */
+    private static final String FILE_PATH = "src/view/sound/m1.wav";
 
     /** Music player for background music. */
     private final MusicPlayer myMusicPlayer;
@@ -70,7 +68,8 @@ public final class TetrisGUI extends JPanel {
     /** Boolean value indicates if the game is over or not. */
     private boolean myGameOver;
 
-
+    /** Boolean value to track if the music is muted or not. */
+    private boolean myIsMuted;
 
     /**
      * Constructs the Tetris GUI, integrating the panels and menu bar.
@@ -90,9 +89,11 @@ public final class TetrisGUI extends JPanel {
 
         // Timer ticks on a certain interval and calls step() on the Board
         myTimer = new Timer(DEFAULT_TIME_DELAY, e -> myBoard.step());
+        myIsMuted = false; // Start with music playing
 
         callConstructorHelperMethods();
     }
+
 
     /**
      * Helper method to call necessary helper methods
@@ -133,18 +134,23 @@ public final class TetrisGUI extends JPanel {
         final JMenuItem pauseGameItem = new JMenuItem("Pause/Resume");
         pauseGameItem.setMnemonic(KeyEvent.VK_P);
 
+        final JMenuItem musicToggleItem = new JMenuItem("Music On/Off");
+        musicToggleItem.setMnemonic(KeyEvent.VK_M);
+
         final JMenuItem exitItem = new JMenuItem("Exit");
         exitItem.setMnemonic(KeyEvent.VK_X);
 
         newGameItem.addActionListener(e -> startNewGame());
         endGameItem.addActionListener(e -> endGame());
         pauseGameItem.addActionListener(theEvent -> togglePauseResume());
+        musicToggleItem.addActionListener(e -> toggleMusic());
         exitItem.addActionListener(theEvent ->
                 myFrame.dispatchEvent(new WindowEvent(myFrame, WindowEvent.WINDOW_CLOSING)));
 
         gameMenu.add(newGameItem);
         gameMenu.add(endGameItem);
         gameMenu.add(pauseGameItem);
+        gameMenu.add(musicToggleItem); // Add the music toggle menu item
         gameMenu.addSeparator();
         gameMenu.add(exitItem);
 
@@ -255,20 +261,34 @@ public final class TetrisGUI extends JPanel {
         myGameOver = true;
         myPauseEndPanel.setGameOver(isGameOver);
     }
+    /**
+     * Updates the music state based on the game's current status.
+     * Music should play only if the game is not over, not muted, and not paused.
+     */
+    private void updateMusicState() {
+        if (!myGameOver && !myIsMuted && myTimer.isRunning()) {
+            myMusicPlayer.startMusic(FILE_PATH);
+        } else {
+            myMusicPlayer.stopMusic();
+        }
+    }
 
     /**
      * Starts a new game and notifies the user.
      * This method is called when a new game is started from the menu.
      */
     private void startNewGame() {
-        if (myGameOver) {
-            myBoard.newGame();
-            myTimer.start();
-            myMusicPlayer.startMusic(FILE_PATH);
-            myGameOver = false;
+        if (myGameOver) { // Only allow starting a new game if the previous one is over
+            myBoard.newGame();  // Reset the game board
+            myTimer.start();    // Start the game timer
+            myGameOver = false; // Mark the game as active
+            myIsMuted = false;  // Unmute music for the new game
             myPauseEndPanel.setPaused(false);
+            updateMusicState(); // Handle music playback
+
         }
     }
+
 
     /**
      * Starts a new game and notifies the user.
@@ -278,8 +298,8 @@ public final class TetrisGUI extends JPanel {
         if (!myGameOver) {
             myTimer.stop();
             myGameOver = true;
-            myMusicPlayer.stopMusic();
             myPauseEndPanel.setGameOver(true);
+            updateMusicState();
         }
     }
 
@@ -292,15 +312,20 @@ public final class TetrisGUI extends JPanel {
             if (myTimer.isRunning()) {
                 myTimer.stop();
                 myPauseEndPanel.setPaused(true);
-                myMusicPlayer.stopMusic();
             } else {
                 myTimer.start();
                 myPauseEndPanel.setPaused(false);
-                myMusicPlayer.startMusic(FILE_PATH);
             }
+            updateMusicState(); // Adjust music based on game state
         }
+    }
 
-
+    /**
+     * Toggles the background music playback state (mute/unmute).
+     */
+    private void toggleMusic() {
+        myIsMuted = !myIsMuted; // Toggle the muted state
+        updateMusicState(); // Adjust music based on game state
     }
 
     /**
@@ -353,9 +378,13 @@ public final class TetrisGUI extends JPanel {
         javax.swing.SwingUtilities.invokeLater(() -> new TetrisGUI("Tetris Game"));
     }
 
+    /**
+     * Key adapter for handling user inputs.
+     */
     private final class MyKeyAdapter extends KeyAdapter {
         @Override
         public void keyPressed(final KeyEvent theEvent) {
+
             if (!myGameOver) {
                 if (myTimer.isRunning()) {
                     switch (theEvent.getKeyCode()) {
@@ -375,6 +404,11 @@ public final class TetrisGUI extends JPanel {
                     endGame();
                 }
             }
+
+            if (theEvent.getKeyCode() == KeyEvent.VK_M) {
+                toggleMusic();
+            }
         }
     }
 }
+

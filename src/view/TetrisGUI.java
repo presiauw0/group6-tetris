@@ -2,6 +2,7 @@ package view;
 
 import static model.MyBoard.PROPERTY_GAME_OVER_STATE;
 import static model.MyBoard.PROPERTY_NEXT_PIECE_CHANGE;
+import static view.score.ScoringSystem.PROPERTY_LEVEL_CHANGE;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -41,8 +42,11 @@ public final class TetrisGUI extends JPanel {
     /** Label for the about dialog box */
     private static final String ABOUT_HARDMODE = "About Hard Mode";
 
-    /** Default Time Delay for Tetris Game. */
+    /** Default Time Delay for Tetris Game in milliseconds. */
     private static final int DEFAULT_TIME_DELAY = 500;
+
+    /** Default Time interval step for increasing/decreasing speed in milliseconds. */
+    private static final int DEFAULT_TIME_STEP = 20;
 
     /** Fixed file path for my Tetris background music */
     private static final String FILE_PATH = "src/view/sound/m1.wav";
@@ -58,6 +62,9 @@ public final class TetrisGUI extends JPanel {
 
     /** The Scoreboard Panel. */
     private final ScoreBoard myScoreBoardPanel;
+
+    /** The Scoring System Class. */
+    private PropertyChangeEnabledScoring myScoreSystem;
 
     /** The Pause and Game Over Panel. */
     private final PauseEndPanel myPauseEndPanel;
@@ -106,16 +113,18 @@ public final class TetrisGUI extends JPanel {
         callConstructorHelperMethods();
     }
 
+
     /**
      * Helper method to call necessary helper methods
      * when constructing a new GUI.
      */
     private void callConstructorHelperMethods() {
+        myScoreSystem = ScoringSystem.getInstance();
         buildMenu();
         layoutComponents();
         addListeners();
         addPropertyChangeListeners();
-        final PropertyChangeEnabledScoring scoreSystem = ScoringSystem.getInstance();
+
         // True if the game does not start on launch
         myGameOver = true;
         myIsMuted = false; // Start with music playing
@@ -283,6 +292,8 @@ public final class TetrisGUI extends JPanel {
      */
     private void addPropertyChangeListeners() {
         myBoard.addPropertyChangeListener(PROPERTY_GAME_OVER_STATE, this::gameOverHelper);
+        myScoreSystem.addPropertyChangeListener(PROPERTY_LEVEL_CHANGE,
+                this::increaseSpeedHalper);
         myBoard.addPropertyChangeListener(PROPERTY_NEXT_PIECE_CHANGE,
                 this::resetRotateCounter);
     }
@@ -297,6 +308,15 @@ public final class TetrisGUI extends JPanel {
         myGameOver = true;
         myPauseEndPanel.setGameOver(isGameOver);
     }
+
+    private void increaseSpeedHalper(final PropertyChangeEvent theEvent) {
+        final int oldVal = (int) theEvent.getOldValue();
+        final int newVal = (int) theEvent.getNewValue();
+        if (newVal > oldVal && myTimer.getDelay() >= 0) {
+            myTimer.setDelay(myTimer.getDelay() - DEFAULT_TIME_STEP);
+        }
+    }
+
     /**
      * Updates the music state based on the game's current status.
      * Music should play only if the game is not over, not muted, and not paused.
@@ -328,6 +348,7 @@ public final class TetrisGUI extends JPanel {
             myHardMode = false;
             myIsMuted = false;  // Unmute music for the new game
             myPauseEndPanel.setPaused(false);
+            myTimer.setDelay(DEFAULT_TIME_DELAY);
             updateMusicState(); // Handle music playback
             buildMenu();
         }

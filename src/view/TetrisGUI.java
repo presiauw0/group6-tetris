@@ -16,7 +16,6 @@ import javax.swing.Timer;
 import model.Board;
 import model.MyBoard;
 
-
 /**
  * The graphical user interface for the Tetris game.
  * Combines the menu bar, game board, next piece preview, and scoreboard.
@@ -26,7 +25,7 @@ import model.MyBoard;
  * @version Autumn 2024
  */
 public final class TetrisGUI extends JPanel {
-    /** Lable for the how to play dialog box */
+    /** Label for the how to play dialog box */
     private static final String MENULABEL_HOWTOPLAY = "How to Play";
 
     /** Label for the about dialog box */
@@ -35,21 +34,20 @@ public final class TetrisGUI extends JPanel {
     /** Default Time interval for game timer in milliseconds */
     private static final int DEFAULT_TIME_DELAY = 500;
 
-    /** Fixed file path for my tetris background music  */
-    private static final String FILE_PATH =
-            "src/view/sound/m1.wav";
+    /** Fixed file path for my Tetris background music */
+    private static final String FILE_PATH = "src/view/sound/m1.wav";
 
     /** Music player for background music. */
-    private final MusicPlayer myMusicPlayer;
+    private final MusicPlayer myMusicPlayer = new MusicPlayer();
 
     /** The Tetris Board Panel. */
-    private final TetrisBoardPanel myBoardPanel;
+    private final TetrisBoardPanel myBoardPanel = new TetrisBoardPanel();
 
     /** The Next Piece Panel. */
-    private final NextPeice myNextPeicePanel;
+    private final NextPeice myNextPeicePanel = new NextPeice();
 
     /** The Scoreboard Panel. */
-    private final ScoreBoard myScoreBoardPanel;
+    private final ScoreBoard myScoreBoardPanel = new ScoreBoard();
 
     /** The main game JFrame. */
     private final JFrame myFrame;
@@ -63,10 +61,8 @@ public final class TetrisGUI extends JPanel {
     /** Boolean value indicates if the game is over or not. */
     private boolean myGameOver;
 
-    /** Boolean value indicates if the music is muted or not. */
-    private boolean myMuted;
-
-
+    /** Boolean value to track if the music is muted or not. */
+    private boolean myIsMuted;
 
     /**
      * Constructs the Tetris GUI, integrating the panels and menu bar.
@@ -77,23 +73,16 @@ public final class TetrisGUI extends JPanel {
         super();
         myFrame = new JFrame(theTitle);
         myBoard = Board.getInstance(); // Factory method
-
-        myBoardPanel = new TetrisBoardPanel();
-        myNextPeicePanel = new NextPeice();
-        myScoreBoardPanel = new ScoreBoard();
-        myMusicPlayer = new MusicPlayer();
-
-        // Timer ticks on a certain interval and calls step() on the Board
         myTimer = new Timer(DEFAULT_TIME_DELAY, e -> myBoard.step());
-
         myGameOver = true; // True if the game does not start on launch
+        myIsMuted = false; // Start with music playing
 
         callConstructorHelperMethods();
     }
 
+
     /**
-     * Helper method to call necessary helper methods
-     * when constructing a new GUI.
+     * Helper method to call necessary helper methods when constructing a new GUI.
      */
     private void callConstructorHelperMethods() {
         buildMenu();
@@ -108,6 +97,7 @@ public final class TetrisGUI extends JPanel {
      */
     private void buildMenu() {
         final JMenuBar menuBar = new JMenuBar();
+        menuBar.setFocusable(false); // Prevent menu bar from stealing focus
         menuBar.add(buildGameMenu());
         menuBar.add(buildHelpMenu());
         myFrame.setJMenuBar(menuBar);
@@ -124,16 +114,21 @@ public final class TetrisGUI extends JPanel {
         final JMenuItem pauseGameItem = new JMenuItem("Pause/Resume");
         pauseGameItem.setMnemonic(KeyEvent.VK_P);
 
+        final JMenuItem musicToggleItem = new JMenuItem("Music On/Off");
+        musicToggleItem.setMnemonic(KeyEvent.VK_M);
+
         final JMenuItem exitItem = new JMenuItem("Exit");
         exitItem.setMnemonic(KeyEvent.VK_X);
 
         newGameItem.addActionListener(e -> startNewGame());
         pauseGameItem.addActionListener(theEvent -> togglePauseResume());
+        musicToggleItem.addActionListener(e -> toggleMusic());
         exitItem.addActionListener(theEvent ->
                 myFrame.dispatchEvent(new WindowEvent(myFrame, WindowEvent.WINDOW_CLOSING)));
 
         gameMenu.add(newGameItem);
         gameMenu.add(pauseGameItem);
+        gameMenu.add(musicToggleItem); // Add the music toggle menu item
         gameMenu.addSeparator();
         gameMenu.add(exitItem);
 
@@ -184,10 +179,9 @@ public final class TetrisGUI extends JPanel {
      * Includes the key listener for user input.
      */
     private void addListeners() {
-        // KeyListener for user input
-        addKeyListener(new MyKeyAdapter());
-        setFocusable(true);
-        requestFocusInWindow();
+        myFrame.addKeyListener(new MyKeyAdapter());
+        myFrame.setFocusable(true);
+        myFrame.requestFocus(); // Ensure focus on the frame
     }
 
     /**
@@ -211,11 +205,11 @@ public final class TetrisGUI extends JPanel {
         myTimer.start();
         myMusicPlayer.startMusic(FILE_PATH);
         myGameOver = false;
+        myFrame.requestFocus(); // Ensure focus after starting a new game
     }
 
     /**
      * Toggles between pausing and resuming the game and notifies the user.
-     * This method is triggered from the menu.
      */
     private void togglePauseResume() {
         if (!myGameOver) {
@@ -227,13 +221,26 @@ public final class TetrisGUI extends JPanel {
                 myMusicPlayer.startMusic(FILE_PATH);
             }
         }
+        myFrame.requestFocus(); // Ensure focus after toggling
+    }
 
-
+    /**
+     * Toggles the background music playback state.
+     * Mutes or unmutes the music based on the current state.
+     */
+    private void toggleMusic() {
+        if (myIsMuted) {
+            myIsMuted = false;
+            myMusicPlayer.startMusic(FILE_PATH);
+        } else {
+            myIsMuted = true;
+            myMusicPlayer.stopMusic();
+        }
+        myFrame.requestFocus(); // Restore focus to the frame after toggling
     }
 
     /**
      * Displays a dialog with instructions on how to play the game.
-     * This method is triggered when "How to Play" is selected from the help menu.
      */
     private void showHowToPlayDialog() {
         JOptionPane.showMessageDialog(
@@ -247,11 +254,11 @@ public final class TetrisGUI extends JPanel {
                 MENULABEL_HOWTOPLAY,
                 JOptionPane.INFORMATION_MESSAGE
         );
+        myFrame.requestFocus(); // Restore focus after dialog
     }
 
     /**
      * Displays a dialog with information about the game.
-     * This method is triggered when "About" is selected from the help menu.
      */
     private void showAboutDialog() {
         JOptionPane.showMessageDialog(
@@ -270,20 +277,23 @@ public final class TetrisGUI extends JPanel {
                 MENULABEL_ABOUT,
                 JOptionPane.INFORMATION_MESSAGE
         );
+        myFrame.requestFocus(); // Restore focus after dialog
     }
 
     /**
      * Main method to launch the application.
-     *
-     * @param theArgs Command line arguments, ignored.
      */
     public static void main(final String[] theArgs) {
         javax.swing.SwingUtilities.invokeLater(() -> new TetrisGUI("Tetris Game"));
     }
 
+    /**
+     * Key adapter for handling user inputs.
+     */
     private final class MyKeyAdapter extends KeyAdapter {
         @Override
         public void keyPressed(final KeyEvent theEvent) {
+
             if (!myGameOver) {
                 if (myTimer.isRunning()) {
                     switch (theEvent.getKeyCode()) {
@@ -303,21 +313,10 @@ public final class TetrisGUI extends JPanel {
                 }
             }
 
-            // Handle the 'm' key for muting/unmuting
+            // Toggle music playback when 'm' is pressed
             if (theEvent.getKeyCode() == KeyEvent.VK_M) {
-                toggleMute();
+                toggleMusic();
             }
         }
-
-        private void toggleMute() {
-            if (myMuted) {
-                myMuted = false;
-                myMusicPlayer.startMusic(FILE_PATH);
-            } else {
-                myMuted = true;
-                myMusicPlayer.stopMusic();
-            }
-        }
-
     }
 }

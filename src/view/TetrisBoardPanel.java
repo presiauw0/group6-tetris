@@ -168,7 +168,7 @@ public class TetrisBoardPanel extends JPanel
     private void callConstructorHelperMethod() {
         myShowGridLines = false;
         myGameOver = true;
-        myShowGhostPiece = true;
+        myShowGhostPiece = false;
 
         layoutComponents();
     }

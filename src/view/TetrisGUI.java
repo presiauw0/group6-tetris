@@ -63,6 +63,9 @@ public final class TetrisGUI extends JPanel {
     /** Boolean value indicates if the game is over or not. */
     private boolean myGameOver;
 
+    /** Boolean value indicates if the music is muted or not. */
+    private boolean myMuted;
+
 
 
     /**
@@ -290,7 +293,8 @@ public final class TetrisGUI extends JPanel {
                         case KeyEvent.VK_SPACE -> myBoard.drop();
                         case KeyEvent.VK_UP, KeyEvent.VK_W -> myBoard.rotateCW();
                         default -> {
-                        } // No action for other keys
+                            // No action for other keys
+                        }
                     }
                 }
 
@@ -299,6 +303,21 @@ public final class TetrisGUI extends JPanel {
                 }
             }
 
+            // Handle the 'm' key for muting/unmuting
+            if (theEvent.getKeyCode() == KeyEvent.VK_M) {
+                toggleMute();
+            }
         }
+
+        private void toggleMute() {
+            if (myMuted) {
+                myMuted = false;
+                myMusicPlayer.startMusic(FILE_PATH);
+            } else {
+                myMuted = true;
+                myMusicPlayer.stopMusic();
+            }
+        }
+
     }
 }

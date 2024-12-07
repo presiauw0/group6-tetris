@@ -70,6 +70,8 @@ public final class TetrisGUI extends JPanel {
     /** Boolean value indicates if the game is over or not. */
     private boolean myGameOver;
 
+    /** Boolean to enable Hard Mode. */
+    private boolean myHardMode;
 
 
     /**
@@ -105,6 +107,7 @@ public final class TetrisGUI extends JPanel {
         addPropertyChangeListeners();
         // True if the game does not start on launch
         myGameOver = true;
+        myHardMode = false;
     }
 
     /**
@@ -368,11 +371,11 @@ public final class TetrisGUI extends JPanel {
                         } // No action for other keys
                     }
                 }
-
-                if (theEvent.getKeyCode() == KeyEvent.VK_P) {
-                    togglePauseResume();
-                } else if (theEvent.getKeyCode() == KeyEvent.VK_E) {
-                    endGame();
+                switch (theEvent.getKeyCode()) {
+                    case KeyEvent.VK_P -> togglePauseResume();
+                    case KeyEvent.VK_E -> endGame();
+                    default -> {
+                    }
                 }
             }
         }

@@ -2,6 +2,7 @@ package view.score;
 
 import static model.MyBoard.PROPERTY_FROZEN_PIECES_CHANGE;
 import static model.MyBoard.PROPERTY_CLEAR_ROW;
+import static model.MyBoard.PROPERTY_GAME_OVER_STATE;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -105,6 +106,17 @@ public class ScoringSystem implements PropertyChangeListener, PropertyChangeEnab
     }
 
     /**
+     * Recalculate level after changes to score and level.
+     */
+    private void recalculateLevel() {
+        final int oldLevel = myLevel;
+        myLevel = (myTotalLinesCleared / LINES_PER_LEVEL) + 1;
+        // Fire event
+        myPcs.firePropertyChange(PropertyChangeEnabledScoring.PROPERTY_LEVEL_CHANGE,
+                oldLevel, myLevel);
+    }
+
+    /**
      * Updates the score and total lines cleared when a specified number of lines are cleared.
      * The score is increased based on the number of lines cleared and the current level.
      * The level is updated after each line clearance.
@@ -114,11 +126,20 @@ public class ScoringSystem implements PropertyChangeListener, PropertyChangeEnab
     private void linesCleared(final int theLines) {
         if (theLines > 0 && theLines <= SCORE_LINE_MULTIPLIER.length) {
             addToScore(SCORE_LINE_MULTIPLIER[theLines - 1] * myLevel);
-            myTotalLinesCleared += theLines;
 
-            final int oldLevel = myLevel;
-            myLevel = (myTotalLinesCleared / LINES_PER_LEVEL) + 1;
-            myPcs.firePropertyChange(PROPERTY_LEVEL_CHANGE, oldLevel, myLevel);
+            final LineStats oldLineStats = new LineStats(
+                    myTotalLinesCleared, getNextLevelLines());
+
+            myTotalLinesCleared += theLines; // Update Lines
+
+            final LineStats newLineStats = new LineStats(
+                    myTotalLinesCleared, getNextLevelLines());
+
+            // Fire event
+            myPcs.firePropertyChange(PropertyChangeEnabledScoring.PROPERTY_CLEARED_LINE_CHANGE,
+                    oldLineStats, newLineStats);
+
+            recalculateLevel();
         }
     }
 
@@ -131,14 +152,31 @@ public class ScoringSystem implements PropertyChangeListener, PropertyChangeEnab
         myLineCounter++;
     }
 
-    @Override
-    public void resetScore() {
+    /**
+     * Reset the scoreboard to its original state.
+     */
+    private void resetScore() {
+        final int oldScore = myScore;
+        final int oldLevel = myLevel;
+        final LineStats oldLineStats = new LineStats(myTotalLinesCleared, getNextLevelLines());
+
         myScore = 0;
         myTotalLinesCleared = 0;
         myLevel = 1;
         myLineCounter = 0;
+
+        // Fire events
+        myPcs.firePropertyChange(PropertyChangeEnabledScoring.PROPERTY_SCORE_CHANGE,
+                oldScore, myScore);
+        myPcs.firePropertyChange(PropertyChangeEnabledScoring.PROPERTY_LEVEL_CHANGE,
+                oldLevel, myLevel);
+
+        final LineStats newLineStats = new LineStats(myTotalLinesCleared, getNextLevelLines());
+        myPcs.firePropertyChange(PropertyChangeEnabledScoring.PROPERTY_CLEARED_LINE_CHANGE,
+                oldLineStats, newLineStats);
     }
 
+    // ***GETTERS***
     @Override
     public int getScore() {
         return myScore;
@@ -192,6 +230,15 @@ public class ScoringSystem implements PropertyChangeListener, PropertyChangeEnab
             addToScore(SCORE_PIECE_FREEZE);
             linesCleared(myLineCounter);
             myLineCounter = 0;
+        }
+        if (PROPERTY_GAME_OVER_STATE.equals(theEvent.getPropertyName())) {
+            /*
+            When the "game over" property is false when fired, a new game is beginning.
+            Clear the board.
+             */
+            if (!(boolean) theEvent.getNewValue()) {
+                resetScore();
+            }
         }
     }
 

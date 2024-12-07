@@ -2,6 +2,8 @@ package view;
 
 import static view.score.PropertyChangeEnabledScoring.PROPERTY_SCORE_CHANGE;
 import static view.score.PropertyChangeEnabledScoring.PROPERTY_LEVEL_CHANGE;
+import static view.score.PropertyChangeEnabledScoring.PROPERTY_CLEARED_LINE_CHANGE;
+import static view.score.PropertyChangeEnabledScoring.LineStats;
 
 import java.awt.Color;
 import java.awt.GridLayout;
@@ -80,11 +82,14 @@ public class ScoreBoard extends JPanel implements PropertyChangeListener {
     public void propertyChange(final PropertyChangeEvent theEvent) {
         if (PROPERTY_SCORE_CHANGE.equals(theEvent.getPropertyName())) {
             scoreLabel.setText("Score: " + theEvent.getNewValue());
-            linesLabel.setText("Lines: " + scoringSystem.getTotalLinesCleared());
-            levelLabel.setText("Level: " + scoringSystem.getNextLevelLines());
         }
         if (PROPERTY_LEVEL_CHANGE.equals(theEvent.getPropertyName())) {
-            levelLabel.setText("Lines: " + scoringSystem.getLevel());
+            levelLabel.setText("Level: " + theEvent.getNewValue());
+        }
+        if (PROPERTY_CLEARED_LINE_CHANGE.equals(theEvent.getPropertyName())) {
+            final LineStats stats = (LineStats) theEvent.getNewValue();
+            linesLabel.setText("Lines: " + stats.totalLines());
+            nextLevelLabel.setText("Next level in " + stats.nextLevelLines() + " lines");
         }
     }
 }

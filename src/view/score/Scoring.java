@@ -41,9 +41,4 @@ public interface Scoring {
      */
     int getNextLevelLines();
 
-    /**
-     * Reset the scoreboard to its original state.
-     */
-    void resetScore();
-
 }

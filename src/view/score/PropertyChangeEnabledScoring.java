@@ -30,6 +30,13 @@ public interface PropertyChangeEnabledScoring extends Scoring {
      */
     String PROPERTY_LEVEL_CHANGE = "SCORING LEVEL CHANGE";
 
+    /**
+     * Property fired when the total number of lines changes.
+     * Old value - previous total number of lines
+     * New value - current total number of lines
+     */
+    String PROPERTY_CLEARED_LINE_CHANGE = "CLEARED LINE CHANGE";
+
 
     /**
      * Add a PropertyChangeListener to the listener list. The listener is registered for
@@ -76,4 +83,14 @@ public interface PropertyChangeEnabledScoring extends Scoring {
      */
     void removePropertyChangeListener(String thePropertyName,
                                       PropertyChangeListener theListener);
+
+
+    /**
+     * A record that describes the total number of cleared lines
+     * and the number of lines needed to get to the next level.
+     *
+     * @param totalLines The total number of cleared lines
+     * @param nextLevelLines The number of lines needed to reach the next level
+     */
+    record LineStats(int totalLines, int nextLevelLines) { }
 }

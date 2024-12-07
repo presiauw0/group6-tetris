@@ -1,8 +1,6 @@
 package view;
 
 import static model.MyBoard.PROPERTY_GAME_OVER_STATE;
-import static model.MyBoard.PROPERTY_FROZEN_PIECES_CHANGE;
-import static model.MyBoard.PROPERTY_CLEAR_ROW;
 
 
 import java.awt.BorderLayout;
@@ -60,7 +58,7 @@ public final class TetrisGUI extends JPanel {
     private final ScoreBoard myScoreBoardPanel;
 
     /** The Scoring System Class. */
-    private final Scoring myScoreSystem;
+    private Scoring myScoreSystem;
 
     /** The Pause and Game Over Panel. */
     private final PauseEndPanel myPauseEndPanel;
@@ -94,7 +92,6 @@ public final class TetrisGUI extends JPanel {
         myScoreBoardPanel = new ScoreBoard();
         myPauseEndPanel = new PauseEndPanel();
         myMusicPlayer = new MusicPlayer();
-        myScoreSystem = new ScoringSystem();
 
         // Timer ticks on a certain interval and calls step() on the Board
         myTimer = new Timer(DEFAULT_TIME_DELAY, e -> myBoard.step());
@@ -111,6 +108,8 @@ public final class TetrisGUI extends JPanel {
         layoutComponents();
         addListeners();
         addPropertyChangeListeners();
+
+        myScoreSystem = ScoringSystem.getInstance();
         // True if the game does not start on launch
         myGameOver = true;
     }
@@ -226,14 +225,6 @@ public final class TetrisGUI extends JPanel {
      */
     private void addPropertyChangeListeners() {
         myBoard.addPropertyChangeListener(PROPERTY_GAME_OVER_STATE, this::gameOverHelper);
-        // Listen for a piece freezing in place
-//        myBoard.addPropertyChangeListener(PROPERTY_FROZEN_PIECES_CHANGE, evt ->
-//                myScoreBoardPanel.updateScore());
-
-        // Listen for lines cleared
-//        myBoard.addPropertyChangeListener(PROPERTY_CLEAR_ROW, evt ->
-//            myScoreBoardPanel.updateScore()
-//        );
     }
 
     /**

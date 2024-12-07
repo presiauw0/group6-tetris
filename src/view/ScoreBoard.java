@@ -1,11 +1,18 @@
 package view;
 
+import static view.score.PropertyChangeEnabledScoring.PROPERTY_SCORE_CHANGE;
+import static view.score.PropertyChangeEnabledScoring.PROPERTY_LEVEL_CHANGE;
+
 import java.awt.Color;
 import java.awt.GridLayout;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import view.score.PropertyChangeEnabledScoring;
+import view.score.ScoringSystem;
 
 /**
  * Represents the scoreboard panel for the Tetris game.
@@ -15,13 +22,13 @@ import javax.swing.SwingConstants;
  * @author Balkirat Singh, Abdulrahman Hassan
  * @version 1.1
  */
-public class ScoreBoard extends JPanel {
+public class ScoreBoard extends JPanel implements PropertyChangeListener {
     private final JLabel scoreLabel;
     private final JLabel linesLabel;
     private final JLabel levelLabel;
     private final JLabel nextLevelLabel;
 
-    private final Scoring scoringSystem;
+    private final PropertyChangeEnabledScoring scoringSystem;
 
     /**
      * Constructs the scoreboard panel.
@@ -33,6 +40,9 @@ public class ScoreBoard extends JPanel {
         linesLabel = new JLabel("Lines: 0", SwingConstants.CENTER);
         levelLabel = new JLabel("Level: 1", SwingConstants.CENTER);
         nextLevelLabel = new JLabel("Next level in 5 lines", SwingConstants.CENTER);
+
+        scoringSystem.addPropertyChangeListener(this);
+
         initialize();
     }
 
@@ -49,6 +59,9 @@ public class ScoreBoard extends JPanel {
         add(nextLevelLabel);
 
         setBorder(BorderFactory.createLineBorder(Color.BLACK));
+
+        // ***Observer design pattern***
+
     }
 
     /**
@@ -56,18 +69,22 @@ public class ScoreBoard extends JPanel {
      * until the next level.
      *
      */
-    public void updateScore() {
-        scoreLabel.setText("Score: " + scoringSystem.getScore());
-        linesLabel.setText("Lines: " + scoringSystem.getTotalLinesCleared());
-        levelLabel.setText("Level: " + scoringSystem.getLevel());
-        nextLevelLabel.setText("Next level in " + scoringSystem.getNextLevelLines() + " lines");
-    }
-
-    /**
-     * Updates the score when a piece is frozen in place, adding 4 points to the score.
-     */
-//    public void pieceFrozen() {
-//        scoringSystem.pieceFrozen();
+//    public void updateScore() {
 //        scoreLabel.setText("Score: " + scoringSystem.getScore());
+//        linesLabel.setText("Lines: " + scoringSystem.getTotalLinesCleared());
+//        levelLabel.setText("Level: " + scoringSystem.getLevel());
+//        nextLevelLabel.setText("Next level in " + scoringSystem.getNextLevelLines() + " lines");
 //    }
+
+    @Override
+    public void propertyChange(final PropertyChangeEvent theEvent) {
+        if (PROPERTY_SCORE_CHANGE.equals(theEvent.getPropertyName())) {
+            scoreLabel.setText("Score: " + theEvent.getNewValue());
+            linesLabel.setText("Lines: " + scoringSystem.getTotalLinesCleared());
+            levelLabel.setText("Level: " + scoringSystem.getNextLevelLines());
+        }
+        if (PROPERTY_LEVEL_CHANGE.equals(theEvent.getPropertyName())) {
+            levelLabel.setText("Lines: " + scoringSystem.getLevel());
+        }
+    }
 }

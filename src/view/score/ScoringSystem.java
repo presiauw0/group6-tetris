@@ -1,10 +1,11 @@
-package view;
+package view.score;
 
 import static model.MyBoard.PROPERTY_FROZEN_PIECES_CHANGE;
 import static model.MyBoard.PROPERTY_CLEAR_ROW;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import model.Board;
 import model.MyBoard;
 
@@ -16,7 +17,7 @@ import model.MyBoard;
  * @author Balkirat Singh, Abdulrahman Hassan, Preston Sia
  * @version 1.2
  */
-public class ScoringSystem implements PropertyChangeListener, Scoring {
+public class ScoringSystem implements PropertyChangeListener, PropertyChangeEnabledScoring {
     // ***Score Increments***
     /**
      * Number of lines that must be cleared before moving to the next level.
@@ -37,7 +38,7 @@ public class ScoringSystem implements PropertyChangeListener, Scoring {
     /**
      * A singleton using the static factory method
      */
-    private static final Scoring INSTANCE = new ScoringSystem();
+    private static final PropertyChangeEnabledScoring INSTANCE = new ScoringSystem();
 
 
     // ***INSTANCE***
@@ -61,6 +62,14 @@ public class ScoringSystem implements PropertyChangeListener, Scoring {
      */
     private int myLineCounter;
 
+    // ***OBSERVER DESIGN PATTERN***
+    /**
+     * A manager for Property Change Listeners
+     * interested in events fired by this class,
+     * including changes to the score and level.
+     */
+    private final PropertyChangeSupport myPcs;
+
 
 
     /**
@@ -75,17 +84,24 @@ public class ScoringSystem implements PropertyChangeListener, Scoring {
         myLevel = 1;
         myLineCounter = 0;
 
+        // ***OBSERVER DESIGN PATTERN***
+        myPcs = new PropertyChangeSupport(this);
+
         // ***Singleton Design Pattern***
+        // Add instance to property change list for the Board class
         final MyBoard ourBoard = Board.getInstance();
         ourBoard.addPropertyChangeListener(this);
     }
 
     /**
-     * Adds points to the score when a piece is frozen in place.
-     * This method adds 4 points to the score whenever a piece is frozen.
+     * Adds points to the score.
      */
-    private void pieceFrozen() {
-        myScore += SCORE_PIECE_FREEZE; // 4 points per frozen piece
+    private void addToScore(final int theValue) {
+        final int oldVal = myScore;
+        myScore += theValue; // 4 points per frozen piece
+        // Fire event
+        myPcs.firePropertyChange(PropertyChangeEnabledScoring.PROPERTY_SCORE_CHANGE,
+                oldVal, myScore);
     }
 
     /**
@@ -97,9 +113,12 @@ public class ScoringSystem implements PropertyChangeListener, Scoring {
      */
     private void linesCleared(final int theLines) {
         if (theLines > 0 && theLines <= SCORE_LINE_MULTIPLIER.length) {
-            myScore += SCORE_LINE_MULTIPLIER[theLines - 1] * myLevel;
+            addToScore(SCORE_LINE_MULTIPLIER[theLines - 1] * myLevel);
             myTotalLinesCleared += theLines;
+
+            final int oldLevel = myLevel;
             myLevel = (myTotalLinesCleared / LINES_PER_LEVEL) + 1;
+            myPcs.firePropertyChange(PROPERTY_LEVEL_CHANGE, oldLevel, myLevel);
         }
     }
 
@@ -110,6 +129,14 @@ public class ScoringSystem implements PropertyChangeListener, Scoring {
      */
     private void incrementLineCounter() {
         myLineCounter++;
+    }
+
+    @Override
+    public void resetScore() {
+        myScore = 0;
+        myTotalLinesCleared = 0;
+        myLevel = 1;
+        myLineCounter = 0;
     }
 
     @Override
@@ -132,13 +159,37 @@ public class ScoringSystem implements PropertyChangeListener, Scoring {
         return LINES_PER_LEVEL - (myTotalLinesCleared % LINES_PER_LEVEL);
     }
 
+
+    // ***OBSERVER DESIGN PATTERN***
+    @Override
+    public void addPropertyChangeListener(final PropertyChangeListener theListener) {
+        myPcs.addPropertyChangeListener(theListener);
+    }
+
+    @Override
+    public void addPropertyChangeListener(final String thePropertyName,
+                                          final PropertyChangeListener theListener) {
+        myPcs.addPropertyChangeListener(thePropertyName, theListener);
+    }
+
+    @Override
+    public void removePropertyChangeListener(final PropertyChangeListener theListener) {
+        myPcs.removePropertyChangeListener(theListener);
+    }
+
+    @Override
+    public void removePropertyChangeListener(final String thePropertyName,
+                                             final PropertyChangeListener theListener) {
+        myPcs.removePropertyChangeListener(thePropertyName, theListener);
+    }
+
     @Override
     public void propertyChange(final PropertyChangeEvent theEvent) {
         if (PROPERTY_CLEAR_ROW.equals(theEvent.getPropertyName())) {
             incrementLineCounter();
         }
         if (PROPERTY_FROZEN_PIECES_CHANGE.equals(theEvent.getPropertyName())) {
-            pieceFrozen();
+            addToScore(SCORE_PIECE_FREEZE);
             linesCleared(myLineCounter);
             myLineCounter = 0;
         }
@@ -149,7 +200,7 @@ public class ScoringSystem implements PropertyChangeListener, Scoring {
      * Returns the specific instance of the ScoringSystem class.
      * @return Returns the specific instance of the ScoringSystem class
      */
-    public static Scoring getInstance() {
+    public static PropertyChangeEnabledScoring getInstance() {
         return INSTANCE;
     }
 }

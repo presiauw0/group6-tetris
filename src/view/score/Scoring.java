@@ -1,4 +1,4 @@
-package view;
+package view.score;
 
 /**
  * Scoring classes are responsible for tracking and reporting
@@ -40,5 +40,10 @@ public interface Scoring {
      * @return the number of lines required to reach the next level
      */
     int getNextLevelLines();
+
+    /**
+     * Reset the scoreboard to its original state.
+     */
+    void resetScore();
 
 }

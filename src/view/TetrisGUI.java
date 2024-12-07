@@ -21,6 +21,8 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 import model.Board;
 import model.MyBoard;
+import view.score.Scoring;
+import view.score.ScoringSystem;
 
 
 /**
@@ -225,13 +227,13 @@ public final class TetrisGUI extends JPanel {
     private void addPropertyChangeListeners() {
         myBoard.addPropertyChangeListener(PROPERTY_GAME_OVER_STATE, this::gameOverHelper);
         // Listen for a piece freezing in place
-        myBoard.addPropertyChangeListener(PROPERTY_FROZEN_PIECES_CHANGE, evt ->
-                myScoreBoardPanel.updateScore());
+//        myBoard.addPropertyChangeListener(PROPERTY_FROZEN_PIECES_CHANGE, evt ->
+//                myScoreBoardPanel.updateScore());
 
         // Listen for lines cleared
-        myBoard.addPropertyChangeListener(PROPERTY_CLEAR_ROW, evt ->
-            myScoreBoardPanel.updateScore()
-        );
+//        myBoard.addPropertyChangeListener(PROPERTY_CLEAR_ROW, evt ->
+//            myScoreBoardPanel.updateScore()
+//        );
     }
 
     /**

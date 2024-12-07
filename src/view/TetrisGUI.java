@@ -19,6 +19,9 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 import model.Board;
 import model.MyBoard;
+import view.score.PropertyChangeEnabledScoring;
+import view.score.ScoringSystem;
+
 
 /**
  * The graphical user interface for the Tetris game.
@@ -52,6 +55,9 @@ public final class TetrisGUI extends JPanel {
 
     /** The Scoreboard Panel. */
     private final ScoreBoard myScoreBoardPanel;
+
+    /** The Scoring System Class. */
+    private PropertyChangeEnabledScoring myScoreSystem;
 
     /** The Pause and Game Over Panel. */
     private final PauseEndPanel myPauseEndPanel;
@@ -89,7 +95,6 @@ public final class TetrisGUI extends JPanel {
 
         // Timer ticks on a certain interval and calls step() on the Board
         myTimer = new Timer(DEFAULT_TIME_DELAY, e -> myBoard.step());
-        myIsMuted = false; // Start with music playing
 
         callConstructorHelperMethods();
     }
@@ -104,8 +109,10 @@ public final class TetrisGUI extends JPanel {
         layoutComponents();
         addListeners();
         addPropertyChangeListeners();
+        myScoreSystem = ScoringSystem.getInstance();
         // True if the game does not start on launch
         myGameOver = true;
+        myIsMuted = false; // Start with music playing
     }
 
     /**
@@ -340,6 +347,13 @@ public final class TetrisGUI extends JPanel {
                         1. Use arrow keys to move and rotate blocks.
                         2. Complete rows to clear them.
                         3. The game ends when blocks reach the top.
+                        
+                        Scoring:
+                        * 4 points per frozen piece.
+                        * 1 line = 40 points * level.
+                        * 2 lines = 100 points * level.
+                        * 3 lines = 300 points * level.
+                        * 4 lines = 1200 points * level.
                         """,
                 MENULABEL_HOWTOPLAY,
                 JOptionPane.INFORMATION_MESSAGE

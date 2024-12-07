@@ -79,4 +79,13 @@ public class MusicPlayer {
             myMusicClip.close();
         }
     }
+
+    /**
+     * Checks if the music is currently playing.
+     *
+     * @return true if music is playing, false otherwise.
+     */
+    public boolean isPlaying() {
+        return myMusicClip != null && myMusicClip.isRunning();
+    }
 }

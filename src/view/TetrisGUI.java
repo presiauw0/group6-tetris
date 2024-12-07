@@ -38,7 +38,10 @@ public final class TetrisGUI extends JPanel {
     /** Label for the about dialog box */
     private static final String MENULABEL_ABOUT = "About";
 
-    /** Default Time interval for game timer in milliseconds */
+    /** Label for the about dialog box */
+    private static final String ABOUT_HARDMODE = "About Hard Mode";
+
+    /** Default Time Delay for Tetris Game. */
     private static final int DEFAULT_TIME_DELAY = 500;
 
     /** Fixed file path for my Tetris background music */
@@ -55,9 +58,6 @@ public final class TetrisGUI extends JPanel {
 
     /** The Scoreboard Panel. */
     private final ScoreBoard myScoreBoardPanel;
-
-    /** The Scoring System Class. */
-    private PropertyChangeEnabledScoring myScoreSystem;
 
     /** The Pause and Game Over Panel. */
     private final PauseEndPanel myPauseEndPanel;
@@ -76,6 +76,7 @@ public final class TetrisGUI extends JPanel {
 
     /** Boolean value to track if the music is muted or not. */
     private boolean myIsMuted;
+
     /** Boolean to enable Hard Mode. */
     private boolean myHardMode;
 
@@ -114,7 +115,7 @@ public final class TetrisGUI extends JPanel {
         layoutComponents();
         addListeners();
         addPropertyChangeListeners();
-        myScoreSystem = ScoringSystem.getInstance();
+        final PropertyChangeEnabledScoring scoreSystem = ScoringSystem.getInstance();
         // True if the game does not start on launch
         myGameOver = true;
         myIsMuted = false; // Start with music playing
@@ -146,44 +147,46 @@ public final class TetrisGUI extends JPanel {
         final JMenuItem pauseGameItem = new JMenuItem("Pause/Resume");
         pauseGameItem.setMnemonic(KeyEvent.VK_P);
 
-        final JMenuItem musicToggleItem = new JMenuItem("Music On/Off");
-        musicToggleItem.setMnemonic(KeyEvent.VK_M);
-
         final JMenuItem exitItem = new JMenuItem("Exit");
         exitItem.setMnemonic(KeyEvent.VK_X);
 
         newGameItem.addActionListener(e -> startNewGame());
         endGameItem.addActionListener(e -> endGame());
         pauseGameItem.addActionListener(theEvent -> togglePauseResume());
-        musicToggleItem.addActionListener(e -> toggleMusic());
         exitItem.addActionListener(theEvent ->
                 myFrame.dispatchEvent(new WindowEvent(myFrame, WindowEvent.WINDOW_CLOSING)));
 
         gameMenu.add(newGameItem);
         gameMenu.add(endGameItem);
         gameMenu.add(pauseGameItem);
-        gameMenu.add(musicToggleItem); // Add the music toggle menu item
         gameMenu.addSeparator();
         gameMenu.add(exitItem);
 
         return gameMenu;
     }
 
+
     private JMenu buildHelpMenu() {
         final JMenu helpMenu = new JMenu("Help");
         helpMenu.setMnemonic(KeyEvent.VK_H);
 
-        final JMenuItem howToPlayItem = new JMenuItem("How to Play");
+        final JMenuItem howToPlayItem = new JMenuItem(MENULABEL_HOWTOPLAY);
         howToPlayItem.setMnemonic(KeyEvent.VK_T);
 
-        final JMenuItem aboutItem = new JMenuItem(" About ");
+        final JMenuItem aboutItem = new JMenuItem(MENULABEL_ABOUT);
         aboutItem.setMnemonic(KeyEvent.VK_A);
+
+        final JMenuItem musicToggleItem = new JMenuItem("Music On/Off");
+        musicToggleItem.setMnemonic(KeyEvent.VK_M);
 
         howToPlayItem.addActionListener(e -> showHowToPlayDialog());
         aboutItem.addActionListener(e -> showAboutDialog());
+        musicToggleItem.addActionListener(e -> toggleMusic());
 
         helpMenu.add(howToPlayItem);
         helpMenu.add(aboutItem);
+        helpMenu.add(musicToggleItem); // Add the music toggle menu item
+
         return helpMenu;
     }
 
@@ -199,6 +202,7 @@ public final class TetrisGUI extends JPanel {
 
         final JMenuItem setHardMode = new JMenuItem("Set Hard Mode");
         setHardMode.setMnemonic(KeyEvent.VK_I);
+
 
         toggleGridLines.addActionListener(theEvent -> myBoardPanel.setGridlines(
                 !myBoardPanel.getGridlines()
@@ -404,7 +408,7 @@ public final class TetrisGUI extends JPanel {
                         * 3 lines = 300 points * level.
                         * 4 lines = 1200 points * level.
                         """,
-                "How To Play",
+                MENULABEL_HOWTOPLAY,
                 JOptionPane.INFORMATION_MESSAGE
         );
     }
@@ -427,7 +431,7 @@ public final class TetrisGUI extends JPanel {
                         Balkirat Singh
                         
                         Group 6""",
-                "About",
+                MENULABEL_ABOUT,
                 JOptionPane.INFORMATION_MESSAGE
         );
     }
@@ -453,7 +457,7 @@ public final class TetrisGUI extends JPanel {
                         Will start A new Game.
                     
                         Group 6""",
-                "About Hard Mode",
+                ABOUT_HARDMODE,
                 JOptionPane.INFORMATION_MESSAGE
         );
     }
@@ -487,6 +491,12 @@ public final class TetrisGUI extends JPanel {
                         } // No action for other keys
                     }
                 }
+                otherEvents(theEvent);
+            }
+        }
+
+        private void otherEvents(final KeyEvent theEvent) {
+            if (!myGameOver) {
                 switch (theEvent.getKeyCode()) {
                     case KeyEvent.VK_P -> togglePauseResume();
                     case KeyEvent.VK_E -> endGame();

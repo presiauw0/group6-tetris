@@ -197,45 +197,51 @@ public final class TetrisGUI extends JPanel {
     }
 
     /**
+     * Updates the music state based on the game's current status.
+     * Music should play only if the game is not over, not muted, and not paused.
+     */
+    private void updateMusicState() {
+        if (!myGameOver && !myIsMuted && myTimer.isRunning()) {
+            myMusicPlayer.startMusic(FILE_PATH);
+        } else {
+            myMusicPlayer.stopMusic();
+        }
+    }
+
+    /**
      * Starts a new game and notifies the user.
      * This method is called when a new game is started from the menu.
      */
     private void startNewGame() {
         myBoard.newGame();
         myTimer.start();
-        myMusicPlayer.startMusic(FILE_PATH);
         myGameOver = false;
+        myIsMuted = false; // Ensure music is unmuted for a new game
+        updateMusicState(); // Adjust music based on game state
         myFrame.requestFocus(); // Ensure focus after starting a new game
     }
 
     /**
-     * Toggles between pausing and resuming the game and notifies the user.
+     * Toggles between pausing and resuming the game and adjusts the music state.
      */
     private void togglePauseResume() {
         if (!myGameOver) {
             if (myTimer.isRunning()) {
                 myTimer.stop();
-                myMusicPlayer.stopMusic();
             } else {
                 myTimer.start();
-                myMusicPlayer.startMusic(FILE_PATH);
             }
+            updateMusicState(); // Adjust music based on game state
         }
         myFrame.requestFocus(); // Ensure focus after toggling
     }
 
     /**
-     * Toggles the background music playback state.
-     * Mutes or unmutes the music based on the current state.
+     * Toggles the background music playback state (mute/unmute).
      */
     private void toggleMusic() {
-        if (myIsMuted) {
-            myIsMuted = false;
-            myMusicPlayer.startMusic(FILE_PATH);
-        } else {
-            myIsMuted = true;
-            myMusicPlayer.stopMusic();
-        }
+        myIsMuted = !myIsMuted; // Toggle the muted state
+        updateMusicState(); // Adjust music based on game state
         myFrame.requestFocus(); // Restore focus to the frame after toggling
     }
 

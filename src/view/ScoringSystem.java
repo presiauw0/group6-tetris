@@ -1,20 +1,67 @@
 package view;
 
+import static model.MyBoard.PROPERTY_FROZEN_PIECES_CHANGE;
+import static model.MyBoard.PROPERTY_CLEAR_ROW;
+
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import model.Board;
+import model.MyBoard;
+
 /**
  * The ScoringSystem class is responsible for tracking the score, total lines cleared,
  * and the current level in a Tetris-like game. It provides methods to update the score
  * based on game actions and calculate the current level based on the number of lines cleared.
  *
- * @author Balkirat Singh, Abdulrahman Hassan
- * @version 1.1
+ * @author Balkirat Singh, Abdulrahman Hassan, Preston Sia
+ * @version 1.2
  */
-public class ScoringSystem {
-    private int score;
-    private int totalLinesCleared;
-    private int level;
+public class ScoringSystem implements PropertyChangeListener, Scoring {
+    // ***Score Increments***
+    /**
+     * Number of lines that must be cleared before moving to the next level.
+     */
+    public static final int LINES_PER_LEVEL = 5;
+    /**
+     * Number of points added when a piece freezes on the board.
+     */
+    public static final int SCORE_PIECE_FREEZE = 4;
+    /**
+     * Multiplier for the number of points removed per number of lines
+     * cleared at a time. These numbers are multiplied by the level number.
+     */
+    public static final int[] SCORE_LINE_MULTIPLIER = {40, 100, 300, 1200};
 
-    // Initial level lines needed to progress
-    private static final int LINES_PER_LEVEL = 5;
+
+    // ***SINGLETON***
+    /**
+     * A singleton using the static factory method
+     */
+    private static final Scoring INSTANCE = new ScoringSystem();
+
+
+    // ***INSTANCE***
+    /**
+     * Store the current score.
+     */
+    private int myScore;
+    /**
+     * Store the total number of cleared lines.
+     */
+    private int myTotalLinesCleared;
+    /**
+     * Store the current level.
+     */
+    private int myLevel;
+
+    // ***Line statistics for calculating***
+    /**
+     * Counter for storing the number of lines cleared
+     * so far, to be used to calculate the lines cleared.
+     */
+    private int myLineCounter;
+
+
 
     /**
      * Constructs a new ScoringSystem with initial values.
@@ -23,17 +70,22 @@ public class ScoringSystem {
      */
     public ScoringSystem() {
         super();
-        score = 0;
-        totalLinesCleared = 0;
-        level = 1;
+        myScore = 0;
+        myTotalLinesCleared = 0;
+        myLevel = 1;
+        myLineCounter = 0;
+
+        // ***Singleton Design Pattern***
+        final MyBoard ourBoard = Board.getInstance();
+        ourBoard.addPropertyChangeListener(this);
     }
 
     /**
      * Adds points to the score when a piece is frozen in place.
      * This method adds 4 points to the score whenever a piece is frozen.
      */
-    public void pieceFrozen() {
-        score += 4; // 4 points per frozen piece
+    private void pieceFrozen() {
+        myScore += SCORE_PIECE_FREEZE; // 4 points per frozen piece
     }
 
     /**
@@ -41,60 +93,63 @@ public class ScoringSystem {
      * The score is increased based on the number of lines cleared and the current level.
      * The level is updated after each line clearance.
      *
-     * @param lines the number of lines cleared
+     * @param theLines the number of lines cleared
      */
-    public void linesCleared(final int lines) {
-        if (lines >= 1 && lines <= 4) {
-            final int[] lineScores = {40, 100, 300, 1200};
-            score += lineScores[lines - 1] * level;
-            totalLinesCleared += lines;
+    private void linesCleared(final int theLines) {
+        if (theLines > 0 && theLines <= SCORE_LINE_MULTIPLIER.length) {
+            myScore += SCORE_LINE_MULTIPLIER[theLines - 1] * myLevel;
+            myTotalLinesCleared += theLines;
+            myLevel = (myTotalLinesCleared / LINES_PER_LEVEL) + 1;
         }
-        updateLevel();
     }
 
     /**
-     * Updates the current level based on the number of lines cleared.
-     * The level increases after every LINES_PER_LEVEL lines cleared.
+     * Increment the number of lines while the Board
+     * class is still counting to calculate the
+     * total number of lines cleared at a time.
      */
-    private void updateLevel() {
-        level = (totalLinesCleared / LINES_PER_LEVEL) + 1;
+    private void incrementLineCounter() {
+        myLineCounter++;
     }
 
-    /**
-     * Gets the current score.
-     *
-     * @return the current score
-     */
+    @Override
     public int getScore() {
-        return score;
+        return myScore;
     }
 
-    /**
-     * Gets the total number of lines cleared so far in the game.
-     *
-     * @return the total number of lines cleared
-     */
+    @Override
     public int getTotalLinesCleared() {
-        return totalLinesCleared;
+        return myTotalLinesCleared;
     }
 
-    /**
-     * Gets the current level of the game.
-     * The level increases as more lines are cleared.
-     *
-     * @return the current level
-     */
+    @Override
     public int getLevel() {
-        return level;
+        return myLevel;
     }
 
-    /**
-     * Calculates the number of lines required to reach the next level.
-     * This method calculates how many more lines need to be cleared to reach the next level.
-     *
-     * @return the number of lines required to reach the next level
-     */
+    @Override
     public int getNextLevelLines() {
-        return LINES_PER_LEVEL - (totalLinesCleared % LINES_PER_LEVEL);
+        return LINES_PER_LEVEL - (myTotalLinesCleared % LINES_PER_LEVEL);
+    }
+
+    @Override
+    public void propertyChange(final PropertyChangeEvent theEvent) {
+        if (PROPERTY_CLEAR_ROW.equals(theEvent.getPropertyName())) {
+            incrementLineCounter();
+        }
+        if (PROPERTY_FROZEN_PIECES_CHANGE.equals(theEvent.getPropertyName())) {
+            pieceFrozen();
+            linesCleared(myLineCounter);
+            myLineCounter = 0;
+        }
+    }
+
+
+    /**
+     * Returns the specific instance of the ScoringSystem class.
+     * @return Returns the specific instance of the ScoringSystem class
+     */
+    public static Scoring getInstance() {
+        return INSTANCE;
     }
 }

@@ -21,14 +21,14 @@ public class ScoreBoard extends JPanel {
     private final JLabel levelLabel;
     private final JLabel nextLevelLabel;
 
-    private final ScoringSystem scoringSystem;
+    private final Scoring scoringSystem;
 
     /**
      * Constructs the scoreboard panel.
      */
     public ScoreBoard() {
         super();
-        scoringSystem = new ScoringSystem();
+        scoringSystem = ScoringSystem.getInstance();
         scoreLabel = new JLabel("Score: 0", SwingConstants.CENTER);
         linesLabel = new JLabel("Lines: 0", SwingConstants.CENTER);
         levelLabel = new JLabel("Level: 1", SwingConstants.CENTER);
@@ -55,10 +55,8 @@ public class ScoreBoard extends JPanel {
      * Updates the displayed score, total lines cleared, current level, and lines remaining
      * until the next level.
      *
-     * @param linesCleared the number of lines cleared in the current move
      */
-    public void updateScore(final int linesCleared) {
-        scoringSystem.linesCleared(linesCleared);
+    public void updateScore() {
         scoreLabel.setText("Score: " + scoringSystem.getScore());
         linesLabel.setText("Lines: " + scoringSystem.getTotalLinesCleared());
         levelLabel.setText("Level: " + scoringSystem.getLevel());
@@ -68,8 +66,8 @@ public class ScoreBoard extends JPanel {
     /**
      * Updates the score when a piece is frozen in place, adding 4 points to the score.
      */
-    public void pieceFrozen() {
-        scoringSystem.pieceFrozen();
-        scoreLabel.setText("Score: " + scoringSystem.getScore());
-    }
+//    public void pieceFrozen() {
+//        scoringSystem.pieceFrozen();
+//        scoreLabel.setText("Score: " + scoringSystem.getScore());
+//    }
 }

@@ -227,7 +227,7 @@ public final class TetrisGUI extends JPanel {
 
     private JMenu buildHighScoreMenu() {
         // Create the "High Scores" menu
-        final JMenu highScoreMenu = new JMenu("High Scores");
+        final JMenu highScoreMenu = new JMenu(" High Scores ");
 
         // Menu item for viewing high scores
         final JMenuItem viewHighScores = new JMenuItem("View High Scores");

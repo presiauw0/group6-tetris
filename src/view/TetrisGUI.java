@@ -139,6 +139,7 @@ public final class TetrisGUI extends JPanel {
         menuBar.add(buildGameMenu());
         menuBar.add(buildOptionsMenu());
         menuBar.add(buildHelpMenu());
+        menuBar.add(buildHighScoreMenu());
         myFrame.setJMenuBar(menuBar);
     }
 
@@ -235,6 +236,23 @@ public final class TetrisGUI extends JPanel {
         return optionsMenu;
     }
 
+    private JMenu buildHighScoreMenu() {
+        final JMenu highScoreMenu = new JMenu("High Scores");
+
+        final JMenuItem viewHighScores = new JMenuItem("View High Scores");
+        viewHighScores.addActionListener(e -> {
+            final HighScoreManager manager = new HighScoreManager();
+            final StringBuilder highScoresText = new StringBuilder("High Scores:\n");
+            for (final HighScore hs : manager.getHighScores()) {
+                highScoresText.append(hs).append("\n");
+            }
+            JOptionPane.showMessageDialog(myFrame, highScoresText.toString(), "High Scores", JOptionPane.INFORMATION_MESSAGE);
+        });
+
+        highScoreMenu.add(viewHighScores);
+        return highScoreMenu;
+    }
+
     private void updateOptionsMenu() {
         if (myHardMode) {
             myBoardPanel.setGridlines(false);
@@ -307,6 +325,7 @@ public final class TetrisGUI extends JPanel {
         myMusicPlayer.stopMusic();
         myGameOver = true;
         myPauseEndPanel.setGameOver(isGameOver);
+        promptForHighScore();
     }
 
     private void increaseSpeedHalper(final PropertyChangeEvent theEvent) {
@@ -380,6 +399,7 @@ public final class TetrisGUI extends JPanel {
             myGameOver = true;
             myHardMode = false;
             myPauseEndPanel.setGameOver(true);
+            promptForHighScore();
             updateMusicState();
         }
     }
@@ -407,6 +427,27 @@ public final class TetrisGUI extends JPanel {
     private void toggleMusic() {
         myIsMuted = !myIsMuted; // Toggle the muted state
         updateMusicState(); // Adjust music based on game state
+    }
+
+    /**
+     * Prompts the user to enter their name for a new high score if the
+     * current score is greater than 0. If a valid name is entered, the
+     * score is saved using the HighScoreManager.
+     */
+    private void promptForHighScore() {
+        if (myScoreSystem.getScore() > 0) { // Optional: Check if score qualifies
+            final String playerName = JOptionPane.showInputDialog(
+                    myFrame,
+                    "Enter your name:",
+                    "New High Score!",
+                    JOptionPane.PLAIN_MESSAGE
+            );
+
+            if (playerName != null && !playerName.isEmpty()) {
+                final HighScoreManager manager = new HighScoreManager();
+                manager.addHighScore(new HighScore(playerName, myScoreSystem.getScore()));
+            }
+        }
     }
 
     /**

@@ -11,7 +11,7 @@ import java.util.Date;
  * @author Abdulrahman Hassan
  * @version Autumn 2024
  */
-public class HighScore implements Serializable {
+public class HighScore implements HighScoreInterface, Serializable {
 
     /**
      * The dash used in my toString.
@@ -52,6 +52,7 @@ public class HighScore implements Serializable {
      *
      * @return the player's name
      */
+    @Override
     public String getPlayerName() {
         return myPlayerName;
     }
@@ -61,6 +62,7 @@ public class HighScore implements Serializable {
      *
      * @return the score
      */
+    @Override
     public int getScore() {
         return myScore;
     }
@@ -70,6 +72,7 @@ public class HighScore implements Serializable {
      *
      * @return the date of the score
      */
+    @Override
     public Date getDate() {
         return myDate;
     }

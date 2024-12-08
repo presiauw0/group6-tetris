@@ -1,10 +1,15 @@
 package view;
 
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Manages the high scores for a game, including adding new high scores,
@@ -14,6 +19,15 @@ import java.util.List;
  * @version Autumn 2024
  */
 public class HighScoreManager {
+
+    /** Logger for logging errors and events. */
+    private static final Logger LOGGER =
+            Logger.getLogger(HighScoreManager.class.getName());
+
+    /**
+     * The name of the into to my exception stating messages.
+     */
+    private static final String EXCEPTION = "Exception details: ";
 
     /**
      * The name of the file where high scores are saved.
@@ -28,7 +42,7 @@ public class HighScoreManager {
     /**
      * The list of high scores.
      */
-    private final List<HighScore> highScores;
+    private final List<HighScore> myHighScores;
 
     /**
      * Constructs a new HighScoreManager and initializes the high scores
@@ -36,7 +50,7 @@ public class HighScoreManager {
      */
     public HighScoreManager() {
         super();
-        highScores = loadHighScores();
+        myHighScores = loadHighScores();
     }
 
     /**
@@ -44,13 +58,13 @@ public class HighScoreManager {
      * by score, and if the list exceeds the maximum number of high scores,
      * the lowest score is removed. The updated list is then saved to the file.
      *
-     * @param score the HighScore object to add
+     * @param theScore the HighScore object to add
      */
-    public void addHighScore(final HighScore score) {
-        highScores.add(score);
-        highScores.sort(Comparator.comparingInt(HighScore::getScore).reversed());
-        if (highScores.size() > MAX_HIGH_SCORES) {
-            highScores.removeLast();
+    public void addHighScore(final HighScore theScore) {
+        myHighScores.add(theScore);
+        myHighScores.sort(Comparator.comparingInt(HighScore::getScore).reversed());
+        if (myHighScores.size() > MAX_HIGH_SCORES) {
+            myHighScores.removeLast();
         }
         saveHighScores();
     }
@@ -59,7 +73,7 @@ public class HighScoreManager {
      * Clears all high scores from the list and updates the high score file.
      */
     public void clearHighScores() {
-        highScores.clear();
+        myHighScores.clear();
         saveHighScores();
     }
 
@@ -69,7 +83,7 @@ public class HighScoreManager {
      * @return a list of HighScore objects
      */
     public List<HighScore> getHighScores() {
-        return highScores;
+        return myHighScores;
     }
 
     /**
@@ -77,10 +91,13 @@ public class HighScoreManager {
      * the exception stack trace is printed.
      */
     private void saveHighScores() {
-        try (final ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(HIGH_SCORE_FILE))) {
-            oos.writeObject(highScores);
+        try (final ObjectOutputStream oos =
+                     new ObjectOutputStream(new FileOutputStream(HIGH_SCORE_FILE))) {
+            oos.writeObject(myHighScores);
         } catch (final IOException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE,
+                    "Failed to save high scores to file: {0}", HIGH_SCORE_FILE);
+            LOGGER.log(Level.SEVERE, EXCEPTION, e);
         }
     }
 
@@ -92,10 +109,14 @@ public class HighScoreManager {
      */
     @SuppressWarnings("unchecked")
     private List<HighScore> loadHighScores() {
-        try (final ObjectInputStream ois = new ObjectInputStream(new FileInputStream(HIGH_SCORE_FILE))) {
-            return (List<HighScore>) ois.readObject();
+        List<HighScore> highScores = new ArrayList<>();
+        try (final ObjectInputStream ois =
+                     new ObjectInputStream(new FileInputStream(HIGH_SCORE_FILE))) {
+            highScores = (List<HighScore>) ois.readObject();
         } catch (final IOException | ClassNotFoundException e) {
-            return new ArrayList<>();
+            LOGGER.log(Level.WARNING, "Highscore failed to load");
+            LOGGER.log(Level.WARNING, EXCEPTION, e);
         }
+        return highScores;
     }
 }

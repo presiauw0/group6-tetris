@@ -4,12 +4,14 @@ import static model.MyBoard.PROPERTY_GAME_OVER_STATE;
 import static model.MyBoard.PROPERTY_NEXT_PIECE_CHANGE;
 import static view.score.ScoringSystem.PROPERTY_LEVEL_CHANGE;
 
-import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
+import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JLayeredPane;
 import javax.swing.JMenu;
@@ -18,6 +20,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.Timer;
+import javax.swing.border.LineBorder;
 import model.Board;
 import model.MyBoard;
 import view.score.PropertyChangeEnabledScoring;
@@ -138,8 +141,8 @@ public final class TetrisGUI extends JPanel {
         final JMenuBar menuBar = new JMenuBar();
         menuBar.add(buildGameMenu());
         menuBar.add(buildOptionsMenu());
-        menuBar.add(buildHelpMenu());
         menuBar.add(buildHighScoreMenu());
+        menuBar.add(buildHelpMenu());
         myFrame.setJMenuBar(menuBar);
     }
 
@@ -176,6 +179,86 @@ public final class TetrisGUI extends JPanel {
     }
 
 
+    private JMenu buildOptionsMenu() {
+
+        final JMenu optionsMenu = new JMenu("Options");
+        optionsMenu.setMnemonic(KeyEvent.VK_O);
+
+        final JMenuItem toggleGridLines = createMenuItems("Toggle Gridlines",
+                KeyEvent.VK_T, e -> toggleGridlines());
+        final JMenuItem toggleGhostPiece = createMenuItems("Toggle Ghost Piece",
+                KeyEvent.VK_O, e -> toggleGhostPiece());
+        final JMenuItem setHardMode = createMenuItems("Set Hard Mode",
+                KeyEvent.VK_I, e -> setHardMode(toggleGridLines, toggleGhostPiece));
+        final JMenuItem musicToggleItem = createMenuItems("Music On/Off",
+                KeyEvent.VK_M, e -> toggleMusic());
+
+        optionsMenu.add(toggleGridLines);
+        optionsMenu.add(toggleGhostPiece);
+        optionsMenu.add(setHardMode);
+        optionsMenu.add(musicToggleItem);
+
+
+        return optionsMenu;
+    }
+
+    private JMenuItem createMenuItems(final String theText, final int theMnemonic,
+                                      final ActionListener theAction) {
+        final JMenuItem menuItem = new JMenuItem(theText);
+        menuItem.setMnemonic(theMnemonic);
+        menuItem.addActionListener(theAction);
+        return menuItem;
+    }
+
+    private void toggleGridlines() {
+        myBoardPanel.setGridlines(!myBoardPanel.getGridlines());
+    }
+    private void toggleGhostPiece() {
+        myBoardPanel.setGhostPieceState(!myBoardPanel.getGhostPieceState());
+
+    }
+    private void setHardMode(final JMenuItem theToggleGridlines,
+                             final JMenuItem theToggleGhostPiece) {
+        showAboutHardModeDialog();
+        startHardGame();
+        theToggleGridlines.setEnabled(false);
+        theToggleGhostPiece.setEnabled(false);
+    }
+
+    private JMenu buildHighScoreMenu() {
+        final String title = "High Scores";
+        final JMenu highScoreMenu = new JMenu(title);
+
+        final JMenuItem viewHighScores = new JMenuItem(title);
+        viewHighScores.addActionListener(e -> showHighScores());
+
+        highScoreMenu.add(viewHighScores);
+        return highScoreMenu;
+    }
+
+    private void showHighScores() {
+        final String highScoresText = buildHighScoresText();
+        displayHighScores(highScoresText);
+    }
+
+    private String buildHighScoresText() {
+        final HighScoreManager manager = new HighScoreManager();
+        final StringBuilder highScoresText = new StringBuilder("All Scores" + " :\n");
+
+        for (final HighScore hs : manager.getHighScores()) {
+            highScoresText.append(hs).append("\n");
+        }
+
+        return highScoresText.toString();
+    }
+
+    private void displayHighScores(final String theHighScoresText) {
+        JOptionPane.showMessageDialog(myFrame, theHighScoresText,
+                "Leaderboard", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+
+
     private JMenu buildHelpMenu() {
         final JMenu helpMenu = new JMenu("Help");
         helpMenu.setMnemonic(KeyEvent.VK_H);
@@ -186,72 +269,15 @@ public final class TetrisGUI extends JPanel {
         final JMenuItem aboutItem = new JMenuItem(MENULABEL_ABOUT);
         aboutItem.setMnemonic(KeyEvent.VK_A);
 
-        final JMenuItem musicToggleItem = new JMenuItem("Music On/Off");
-        musicToggleItem.setMnemonic(KeyEvent.VK_M);
-
         howToPlayItem.addActionListener(e -> showHowToPlayDialog());
         aboutItem.addActionListener(e -> showAboutDialog());
-        musicToggleItem.addActionListener(e -> toggleMusic());
 
         helpMenu.add(howToPlayItem);
         helpMenu.add(aboutItem);
-        helpMenu.add(musicToggleItem); // Add the music toggle menu item
 
         return helpMenu;
     }
 
-    private JMenu buildOptionsMenu() {
-        final JMenu optionsMenu = new JMenu("Options");
-        optionsMenu.setMnemonic(KeyEvent.VK_O);
-
-        final JMenuItem toggleGridLines = new JMenuItem("Toggle Gridlines");
-        toggleGridLines.setMnemonic(KeyEvent.VK_T);
-
-        final JMenuItem toggleGhostPiece = new JMenuItem("Toggle Ghost Piece");
-        toggleGhostPiece.setMnemonic(KeyEvent.VK_O);
-
-        final JMenuItem setHardMode = new JMenuItem("Set Hard Mode");
-        setHardMode.setMnemonic(KeyEvent.VK_I);
-
-
-        toggleGridLines.addActionListener(theEvent -> myBoardPanel.setGridlines(
-                !myBoardPanel.getGridlines()
-        ));
-
-        toggleGhostPiece.addActionListener(theEvent -> myBoardPanel.setGhostPieceState(
-                !myBoardPanel.getGhostPieceState()
-        ));
-
-        setHardMode.addActionListener(e -> showAboutHardModeDialog());
-        setHardMode.addActionListener(e -> {
-            startHardGame();
-            toggleGridLines.setEnabled(false);
-            toggleGhostPiece.setEnabled(false);
-        });
-
-        optionsMenu.add(toggleGridLines);
-        optionsMenu.add(toggleGhostPiece);
-        optionsMenu.add(setHardMode);
-
-        return optionsMenu;
-    }
-
-    private JMenu buildHighScoreMenu() {
-        final JMenu highScoreMenu = new JMenu("High Scores");
-
-        final JMenuItem viewHighScores = new JMenuItem("View High Scores");
-        viewHighScores.addActionListener(e -> {
-            final HighScoreManager manager = new HighScoreManager();
-            final StringBuilder highScoresText = new StringBuilder("High Scores:\n");
-            for (final HighScore hs : manager.getHighScores()) {
-                highScoresText.append(hs).append("\n");
-            }
-            JOptionPane.showMessageDialog(myFrame, highScoresText.toString(), "High Scores", JOptionPane.INFORMATION_MESSAGE);
-        });
-
-        highScoreMenu.add(viewHighScores);
-        return highScoreMenu;
-    }
 
     private void updateOptionsMenu() {
         if (myHardMode) {
@@ -266,7 +292,34 @@ public final class TetrisGUI extends JPanel {
      * Uses a JLayoredPanel to handel displaying the puse and game over message.
      */
     private void layoutComponents() {
+        final int borderSize = 3;
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
+        final JPanel rightPanel = new JPanel();
+        rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
+
+        rightPanel.add(myNextPeicePanel);
+        rightPanel.add(myScoreBoardPanel);
+
+        final JPanel displayPanel = new JPanel();
+        myNextPeicePanel.setBorder(new LineBorder(Color.WHITE, borderSize));
+        myScoreBoardPanel.setBorder(new LineBorder(Color.WHITE, borderSize));
+
+        displayPanel.setLayout(new BoxLayout(displayPanel, BoxLayout.X_AXIS));
+        displayPanel.add(boardLayout());
+        displayPanel.add(rightPanel);
+
+        add(displayPanel);
+
+        myFrame.setContentPane(this);
+        myFrame.pack();
+        myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        myFrame.setVisible(true);
+        myFrame.setResizable(false);
+    }
+
+    private JLayeredPane boardLayout() {
+        final int borderSize = 3;
         final Dimension boardSize = myBoardPanel.getPreferredSize();
 
         final JLayeredPane layeredPane = new JLayeredPane();
@@ -277,21 +330,12 @@ public final class TetrisGUI extends JPanel {
         myPauseEndPanel.setBounds(0, 0, boardSize.width, boardSize.height);
         layeredPane.add(myPauseEndPanel, JLayeredPane.PALETTE_LAYER);
 
-        setLayout(new BorderLayout());
-        add(layeredPane, BorderLayout.CENTER);
+        myBoardPanel.setBorder(new LineBorder(Color.WHITE, borderSize));
 
-        final JPanel rightPanel = new JPanel(new BorderLayout());
-        rightPanel.add(myNextPeicePanel, BorderLayout.NORTH);
-        rightPanel.add(myScoreBoardPanel, BorderLayout.CENTER);
-
-        add(rightPanel, BorderLayout.EAST);
-
-        myFrame.setContentPane(this);
-        myFrame.pack();
-        myFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        myFrame.setVisible(true);
-        myFrame.setResizable(false);
+        return layeredPane;
     }
+
+
 
     /**
      * Adds necessary listeners to the GUI.
@@ -439,7 +483,7 @@ public final class TetrisGUI extends JPanel {
             final String playerName = JOptionPane.showInputDialog(
                     myFrame,
                     "Enter your name:",
-                    "New High Score!",
+                    "Save Score?",
                     JOptionPane.PLAIN_MESSAGE
             );
 

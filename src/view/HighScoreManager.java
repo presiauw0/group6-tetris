@@ -56,6 +56,14 @@ public class HighScoreManager {
     }
 
     /**
+     * Clears all high scores from the list and updates the high score file.
+     */
+    public void clearHighScores() {
+        highScores.clear();
+        saveHighScores();
+    }
+
+    /**
      * Retrieves the list of high scores.
      *
      * @return a list of HighScore objects

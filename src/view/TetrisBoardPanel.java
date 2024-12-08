@@ -357,7 +357,7 @@ public class TetrisBoardPanel extends JPanel
                 );
 
                 theGraphics.setStroke(new BasicStroke(DEFAULT_STROKE));
-                theGraphics.setPaint(TetrisColorSchemeDefault.BORDER_COLOR);
+                theGraphics.setPaint(TetrisColorSchemeDefault.GHOST_BORDER_COLOR);
                 theGraphics.draw(rect);
             }
         }

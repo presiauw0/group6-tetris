@@ -246,10 +246,37 @@ public final class TetrisGUI extends JPanel {
             for (final HighScore hs : manager.getHighScores()) {
                 highScoresText.append(hs).append("\n");
             }
-            JOptionPane.showMessageDialog(myFrame, highScoresText.toString(), "High Scores", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(
+                    myFrame,
+                    !highScoresText.isEmpty() ? highScoresText.toString() : "No high scores available.",
+                    "High Scores",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+        });
+
+        final JMenuItem clearHighScores = new JMenuItem("Clear High Scores");
+        clearHighScores.addActionListener(e -> {
+            final int confirmation = JOptionPane.showConfirmDialog(
+                    myFrame,
+                    "Are you sure you want to clear all high scores?",
+                    "Confirm Clear High Scores",
+                    JOptionPane.YES_NO_OPTION
+            );
+
+            if (confirmation == JOptionPane.YES_OPTION) {
+                final HighScoreManager manager = new HighScoreManager();
+                manager.clearHighScores();
+                JOptionPane.showMessageDialog(
+                        myFrame,
+                        "All high scores have been cleared.",
+                        "High Scores Cleared",
+                        JOptionPane.INFORMATION_MESSAGE
+                );
+            }
         });
 
         highScoreMenu.add(viewHighScores);
+        highScoreMenu.add(clearHighScores);
         return highScoreMenu;
     }
 
@@ -439,7 +466,7 @@ public final class TetrisGUI extends JPanel {
             final String playerName = JOptionPane.showInputDialog(
                     myFrame,
                     "Enter your name:",
-                    "New High Score!",
+                    "Save Score",
                     JOptionPane.PLAIN_MESSAGE
             );
 

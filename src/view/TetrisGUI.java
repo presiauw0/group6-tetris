@@ -6,6 +6,7 @@ import static view.score.ScoringSystem.PROPERTY_LEVEL_CHANGE;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
@@ -13,6 +14,8 @@ import java.beans.PropertyChangeEvent;
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JLayeredPane;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -63,11 +66,11 @@ public final class TetrisGUI extends JPanel {
     /** The Scoreboard Panel. */
     private final ScoreBoard myScoreBoardPanel;
 
-    /** The Pause and Game Over Panel. */
-    private final PauseEndPanel myPauseEndPanel;
-
     /** The Scoring System Class. */
     private PropertyChangeEnabledScoring myScoreSystem;
+
+    /** The Pause and Game Over Panel. */
+    private final PauseEndPanel myPauseEndPanel;
 
     /** The main game JFrame. */
     private final JFrame myFrame;
@@ -120,9 +123,7 @@ public final class TetrisGUI extends JPanel {
      */
     private void callConstructorHelperMethods() {
         myScoreSystem = ScoringSystem.getInstance();
-        final TetrisMenuBuild menu = new TetrisMenuBuild(this);
-        myFrame.setJMenuBar(menu.createMenuBar());
-
+        buildMenu();
         layoutComponents();
         addListeners();
         addPropertyChangeListeners();
@@ -133,26 +134,90 @@ public final class TetrisGUI extends JPanel {
     }
 
     /**
-     * A Method to toggle the gridlines on or off.
+     * Builds the menu bar for the Tetris GUI.
+     * Adds the Game and Help menus to the menu bar.
      */
-    public void toggleGridlines() {
-        myBoardPanel.setGridlines(!myBoardPanel.getGridlines());
+    private void buildMenu() {
+        final JMenuBar menuBar = new JMenuBar();
+        menuBar.add(buildGameMenu());
+        menuBar.add(buildOptionsMenu());
+        menuBar.add(buildHighScoreMenu());
+        menuBar.add(buildHelpMenu());
+        myFrame.setJMenuBar(menuBar);
     }
 
-    /**
-     * A Method to toggle the Ghost Piece on or off.
-     */
-    public void toggleGhostPiece() {
+    private JMenu buildGameMenu() {
+        final JMenu gameMenu = new JMenu("Game");
+
+        gameMenu.setMnemonic(KeyEvent.VK_G);
+
+        final JMenuItem newGameItem = new JMenuItem("New Game");
+        newGameItem.setMnemonic(KeyEvent.VK_N);
+
+        final JMenuItem endGameItem = new JMenuItem("End Game");
+        endGameItem.setMnemonic(KeyEvent.VK_E);
+
+        final JMenuItem pauseGameItem = new JMenuItem("Pause/Resume");
+        pauseGameItem.setMnemonic(KeyEvent.VK_P);
+
+        final JMenuItem exitItem = new JMenuItem("Exit");
+        exitItem.setMnemonic(KeyEvent.VK_X);
+
+        newGameItem.addActionListener(e -> startNewGame());
+        endGameItem.addActionListener(e -> endGame());
+        pauseGameItem.addActionListener(theEvent -> togglePauseResume());
+        exitItem.addActionListener(theEvent ->
+                myFrame.dispatchEvent(new WindowEvent(myFrame, WindowEvent.WINDOW_CLOSING)));
+
+        gameMenu.add(newGameItem);
+        gameMenu.add(endGameItem);
+        gameMenu.add(pauseGameItem);
+        gameMenu.addSeparator();
+        gameMenu.add(exitItem);
+
+        return gameMenu;
+    }
+
+
+    private JMenu buildOptionsMenu() {
+
+        final JMenu optionsMenu = new JMenu("Options");
+        optionsMenu.setMnemonic(KeyEvent.VK_O);
+
+        final JMenuItem toggleGridLines = createMenuItems("Toggle Gridlines",
+                KeyEvent.VK_T, e -> toggleGridlines());
+        final JMenuItem toggleGhostPiece = createMenuItems("Toggle Ghost Piece",
+                KeyEvent.VK_O, e -> toggleGhostPiece());
+        final JMenuItem setHardMode = createMenuItems("Set Hard Mode",
+                KeyEvent.VK_I, e -> setHardMode(toggleGridLines, toggleGhostPiece));
+        final JMenuItem musicToggleItem = createMenuItems("Music On/Off",
+                KeyEvent.VK_M, e -> toggleMusic());
+
+        optionsMenu.add(toggleGridLines);
+        optionsMenu.add(toggleGhostPiece);
+        optionsMenu.add(setHardMode);
+        optionsMenu.add(musicToggleItem);
+
+
+        return optionsMenu;
+    }
+
+    private JMenuItem createMenuItems(final String theText, final int theMnemonic,
+                                      final ActionListener theAction) {
+        final JMenuItem menuItem = new JMenuItem(theText);
+        menuItem.setMnemonic(theMnemonic);
+        menuItem.addActionListener(theAction);
+        return menuItem;
+    }
+
+    private void toggleGridlines() {
+        myBoardPanel.setGridlines(!myBoardPanel.getGridlines());
+    }
+    private void toggleGhostPiece() {
         myBoardPanel.setGhostPieceState(!myBoardPanel.getGhostPieceState());
 
     }
-
-    /** A method to Start a new hardgame and deactivate features.
-     * Deatctivates gridline and Ghost Piece button.
-     * @param theToggleGridlines Toggle's Gridlines On or off.
-     * @param theToggleGhostPiece Toggle's Ghost Piece On or off.
-     */
-    public void setHardMode(final JMenuItem theToggleGridlines,
+    private void setHardMode(final JMenuItem theToggleGridlines,
                              final JMenuItem theToggleGhostPiece) {
         showAboutHardModeDialog();
         startHardGame();
@@ -160,23 +225,77 @@ public final class TetrisGUI extends JPanel {
         theToggleGhostPiece.setEnabled(false);
     }
 
-    /** A method to Start a new hardgame and deactivate features.
-     * Deatctivates gridline and Ghost Piece button.
-     * @param theToggleGridlines Toggle's Gridlines On or off.
-     * @param theToggleGhostPiece Toggle's Ghost Piece On or off.
-     */
-    public void resetHardMode(final JMenuItem theToggleGridlines,
-                            final JMenuItem theToggleGhostPiece) {
-        theToggleGridlines.setEnabled(true);
-        theToggleGhostPiece.setEnabled(true);
+    private JMenu buildHighScoreMenu() {
+        // Create the "High Scores" menu
+        final JMenu highScoreMenu = new JMenu("High Scores");
+
+        // Menu item for viewing high scores
+        final JMenuItem viewHighScores = new JMenuItem("View High Scores");
+        viewHighScores.addActionListener(e -> {
+            final HighScoreManager manager = new HighScoreManager();
+            final StringBuilder highScoresText = new StringBuilder("High Scores:\n");
+            for (final HighScore hs : manager.getHighScores()) {
+                highScoresText.append(hs).append("\n");
+            }
+            JOptionPane.showMessageDialog(
+                    myFrame,
+                    !highScoresText.isEmpty() ? highScoresText.toString() : "No high scores available.",
+                    "High Scores",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+        });
+
+        // Menu item for clearing high scores
+        final JMenuItem clearHighScores = new JMenuItem("Clear High Scores");
+        clearHighScores.addActionListener(e -> {
+            final int confirmation = JOptionPane.showConfirmDialog(
+                    myFrame,
+                    "Are you sure you want to clear all high scores?",
+                    "Confirm Clear High Scores",
+                    JOptionPane.YES_NO_OPTION
+            );
+
+            if (confirmation == JOptionPane.YES_OPTION) {
+                final HighScoreManager manager = new HighScoreManager();
+                manager.clearHighScores();
+                JOptionPane.showMessageDialog(
+                        myFrame,
+                        "All high scores have been cleared.",
+                        "High Scores Cleared",
+                        JOptionPane.INFORMATION_MESSAGE
+                );
+            }
+        });
+
+        highScoreMenu.add(viewHighScores);
+        highScoreMenu.add(clearHighScores);
+        return highScoreMenu;
     }
 
-    /** a method to remove gridlines if Hard Mode is enabled. */
+    private JMenu buildHelpMenu() {
+        final JMenu helpMenu = new JMenu("Help");
+        helpMenu.setMnemonic(KeyEvent.VK_H);
+
+        final JMenuItem howToPlayItem = new JMenuItem(MENULABEL_HOWTOPLAY);
+        howToPlayItem.setMnemonic(KeyEvent.VK_T);
+
+        final JMenuItem aboutItem = new JMenuItem(MENULABEL_ABOUT);
+        aboutItem.setMnemonic(KeyEvent.VK_A);
+
+        howToPlayItem.addActionListener(e -> showHowToPlayDialog());
+        aboutItem.addActionListener(e -> showAboutDialog());
+
+        helpMenu.add(howToPlayItem);
+        helpMenu.add(aboutItem);
+
+        return helpMenu;
+    }
+
+
     private void updateOptionsMenu() {
         if (myHardMode) {
             myBoardPanel.setGridlines(false);
             myBoardPanel.setGhostPieceState(false);
-
         }
     }
 
@@ -228,6 +347,8 @@ public final class TetrisGUI extends JPanel {
 
         return layeredPane;
     }
+
+
 
     /**
      * Adds necessary listeners to the GUI.
@@ -295,7 +416,7 @@ public final class TetrisGUI extends JPanel {
      * Starts a new game and notifies the user.
      * This method is called when a new game is started from the menu.
      */
-    public void startNewGame() {
+    private void startNewGame() {
         if (myGameOver) { // Only allow starting a new game if the previous one is over
             myBoard.newGame();  // Reset the game board
             myTimer.start();    // Start the game timer
@@ -305,7 +426,7 @@ public final class TetrisGUI extends JPanel {
             myPauseEndPanel.setPaused(false);
             myTimer.setDelay(DEFAULT_TIME_DELAY);
             updateMusicState(); // Handle music playback
-            updateOptionsMenu();
+            buildMenu();
         }
     }
 
@@ -329,7 +450,7 @@ public final class TetrisGUI extends JPanel {
      * Starts a new game and notifies the user.
      * This method is called when a new game is started from the menu.
      */
-    public void endGame() {
+    private void endGame() {
         if (!myGameOver) {
             myTimer.stop();
             myGameOver = true;
@@ -344,7 +465,7 @@ public final class TetrisGUI extends JPanel {
      * Toggles between pausing and resuming the game and notifies the user.
      * This method is triggered from the menu.
      */
-    public void togglePauseResume() {
+    private void togglePauseResume() {
         if (!myGameOver) {
             if (myTimer.isRunning()) {
                 myTimer.stop();
@@ -360,7 +481,7 @@ public final class TetrisGUI extends JPanel {
     /**
      * Toggles the background music playback state (mute/unmute).
      */
-    public void toggleMusic() {
+    private void toggleMusic() {
         myIsMuted = !myIsMuted; // Toggle the muted state
         updateMusicState(); // Adjust music based on game state
     }
@@ -390,7 +511,7 @@ public final class TetrisGUI extends JPanel {
      * Displays a dialog with instructions on how to play the game.
      * This method is triggered when "How to Play" is selected from the help menu.
      */
-    public void showHowToPlayDialog() {
+    private void showHowToPlayDialog() {
         JOptionPane.showMessageDialog(
                 myFrame,
                 """
@@ -415,7 +536,7 @@ public final class TetrisGUI extends JPanel {
      * Displays a dialog with information about the game.
      * This method is triggered when "About" is selected from the help menu.
      */
-    public void showAboutDialog() {
+    private void showAboutDialog() {
         JOptionPane.showMessageDialog(
                 myFrame,
                 """
@@ -469,11 +590,6 @@ public final class TetrisGUI extends JPanel {
         javax.swing.SwingUtilities.invokeLater(() -> new TetrisGUI("Tetris Game"));
     }
 
-    /** A method to Exit the Game. */
-    public void exitGame() {
-        myFrame.dispatchEvent(new WindowEvent(myFrame, WindowEvent.WINDOW_CLOSING));
-    }
-
     /**
      * Key adapter for handling user inputs.
      */
@@ -523,3 +639,4 @@ public final class TetrisGUI extends JPanel {
         }
     }
 }
+

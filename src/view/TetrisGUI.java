@@ -399,8 +399,8 @@ public final class TetrisGUI extends JPanel {
             myGameOver = true;
             myHardMode = false;
             myPauseEndPanel.setGameOver(true);
-            promptForHighScore();
             updateMusicState();
+            promptForHighScore();
         }
     }
 

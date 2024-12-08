@@ -226,38 +226,51 @@ public final class TetrisGUI extends JPanel {
     }
 
     private JMenu buildHighScoreMenu() {
-        final String title = "High Scores";
-        final JMenu highScoreMenu = new JMenu(title);
+        // Create the "High Scores" menu
+        final JMenu highScoreMenu = new JMenu("High Scores");
 
-        final JMenuItem viewHighScores = new JMenuItem(title);
-        viewHighScores.addActionListener(e -> showHighScores());
+        // Menu item for viewing high scores
+        final JMenuItem viewHighScores = new JMenuItem("View High Scores");
+        viewHighScores.addActionListener(e -> {
+            final HighScoreManager manager = new HighScoreManager();
+            final StringBuilder highScoresText = new StringBuilder("High Scores:\n");
+            for (final HighScore hs : manager.getHighScores()) {
+                highScoresText.append(hs).append("\n");
+            }
+            JOptionPane.showMessageDialog(
+                    myFrame,
+                    !highScoresText.isEmpty() ? highScoresText.toString() : "No high scores available.",
+                    "High Scores",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+        });
+
+        // Menu item for clearing high scores
+        final JMenuItem clearHighScores = new JMenuItem("Clear High Scores");
+        clearHighScores.addActionListener(e -> {
+            final int confirmation = JOptionPane.showConfirmDialog(
+                    myFrame,
+                    "Are you sure you want to clear all high scores?",
+                    "Confirm Clear High Scores",
+                    JOptionPane.YES_NO_OPTION
+            );
+
+            if (confirmation == JOptionPane.YES_OPTION) {
+                final HighScoreManager manager = new HighScoreManager();
+                manager.clearHighScores();
+                JOptionPane.showMessageDialog(
+                        myFrame,
+                        "All high scores have been cleared.",
+                        "High Scores Cleared",
+                        JOptionPane.INFORMATION_MESSAGE
+                );
+            }
+        });
 
         highScoreMenu.add(viewHighScores);
+        highScoreMenu.add(clearHighScores);
         return highScoreMenu;
     }
-
-    private void showHighScores() {
-        final String highScoresText = buildHighScoresText();
-        displayHighScores(highScoresText);
-    }
-
-    private String buildHighScoresText() {
-        final HighScoreManager manager = new HighScoreManager();
-        final StringBuilder highScoresText = new StringBuilder("All Scores" + " :\n");
-
-        for (final HighScore hs : manager.getHighScores()) {
-            highScoresText.append(hs).append("\n");
-        }
-
-        return highScoresText.toString();
-    }
-
-    private void displayHighScores(final String theHighScoresText) {
-        JOptionPane.showMessageDialog(myFrame, theHighScoresText,
-                "Leaderboard", JOptionPane.INFORMATION_MESSAGE);
-    }
-
-
 
     private JMenu buildHelpMenu() {
         final JMenu helpMenu = new JMenu("Help");

@@ -1,20 +1,31 @@
 package view;
 
 import static model.MyBoard.PROPERTY_GAME_OVER_STATE;
+import static model.MyBoard.PROPERTY_NEXT_PIECE_CHANGE;
+import static view.score.ScoringSystem.PROPERTY_LEVEL_CHANGE;
 
-import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
+import java.beans.PropertyChangeEvent;
+import javax.swing.BoxLayout;
 import javax.swing.JFrame;
+import javax.swing.JLayeredPane;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.Timer;
+import javax.swing.border.LineBorder;
 import model.Board;
 import model.MyBoard;
+import view.score.PropertyChangeEnabledScoring;
+import view.score.ScoringSystem;
+
 
 /**
  * The graphical user interface for the Tetris game.
@@ -31,23 +42,35 @@ public final class TetrisGUI extends JPanel {
     /** Label for the about dialog box */
     private static final String MENULABEL_ABOUT = "About";
 
-    /** Default Time interval for game timer in milliseconds */
+    /** Label for the about dialog box */
+    private static final String ABOUT_HARDMODE = "About Hard Mode";
+
+    /** Default Time Delay for Tetris Game in milliseconds. */
     private static final int DEFAULT_TIME_DELAY = 500;
+
+    /** Default Time interval step for increasing/decreasing speed in milliseconds. */
+    private static final int DEFAULT_TIME_STEP = 20;
 
     /** Fixed file path for my Tetris background music */
     private static final String FILE_PATH = "src/view/sound/m1.wav";
 
     /** Music player for background music. */
-    private final MusicPlayer myMusicPlayer = new MusicPlayer();
+    private final MusicPlayer myMusicPlayer;
 
     /** The Tetris Board Panel. */
-    private final TetrisBoardPanel myBoardPanel = new TetrisBoardPanel();
+    private final TetrisBoardPanel myBoardPanel;
 
     /** The Next Piece Panel. */
-    private final NextPeice myNextPeicePanel = new NextPeice();
+    private final NextPeice myNextPeicePanel;
 
     /** The Scoreboard Panel. */
-    private final ScoreBoard myScoreBoardPanel = new ScoreBoard();
+    private final ScoreBoard myScoreBoardPanel;
+
+    /** The Scoring System Class. */
+    private PropertyChangeEnabledScoring myScoreSystem;
+
+    /** The Pause and Game Over Panel. */
+    private final PauseEndPanel myPauseEndPanel;
 
     /** The main game JFrame. */
     private final JFrame myFrame;
@@ -64,6 +87,13 @@ public final class TetrisGUI extends JPanel {
     /** Boolean value to track if the music is muted or not. */
     private boolean myIsMuted;
 
+    /** Boolean to enable Hard Mode. */
+    private boolean myHardMode;
+
+    /** an Integer to store the Rotation Counter. */
+    private int myRotateCounter;
+
+
     /**
      * Constructs the Tetris GUI, integrating the panels and menu bar.
      *
@@ -73,22 +103,34 @@ public final class TetrisGUI extends JPanel {
         super();
         myFrame = new JFrame(theTitle);
         myBoard = Board.getInstance(); // Factory method
+
+        myBoardPanel = new TetrisBoardPanel();
+        myNextPeicePanel = new NextPeice();
+        myScoreBoardPanel = new ScoreBoard();
+        myPauseEndPanel = new PauseEndPanel();
+        myMusicPlayer = new MusicPlayer();
+
+        // Timer ticks on a certain interval and calls step() on the Board
         myTimer = new Timer(DEFAULT_TIME_DELAY, e -> myBoard.step());
-        myGameOver = true; // True if the game does not start on launch
-        myIsMuted = false; // Start with music playing
 
         callConstructorHelperMethods();
     }
 
 
     /**
-     * Helper method to call necessary helper methods when constructing a new GUI.
+     * Helper method to call necessary helper methods
+     * when constructing a new GUI.
      */
     private void callConstructorHelperMethods() {
+        myScoreSystem = ScoringSystem.getInstance();
         buildMenu();
         layoutComponents();
         addListeners();
         addPropertyChangeListeners();
+
+        // True if the game does not start on launch
+        myGameOver = true;
+        myIsMuted = false; // Start with music playing
     }
 
     /**
@@ -97,8 +139,9 @@ public final class TetrisGUI extends JPanel {
      */
     private void buildMenu() {
         final JMenuBar menuBar = new JMenuBar();
-        menuBar.setFocusable(false); // Prevent menu bar from stealing focus
         menuBar.add(buildGameMenu());
+        menuBar.add(buildOptionsMenu());
+        menuBar.add(buildHighScoreMenu());
         menuBar.add(buildHelpMenu());
         myFrame.setJMenuBar(menuBar);
     }
@@ -111,29 +154,110 @@ public final class TetrisGUI extends JPanel {
         final JMenuItem newGameItem = new JMenuItem("New Game");
         newGameItem.setMnemonic(KeyEvent.VK_N);
 
+        final JMenuItem endGameItem = new JMenuItem("End Game");
+        endGameItem.setMnemonic(KeyEvent.VK_E);
+
         final JMenuItem pauseGameItem = new JMenuItem("Pause/Resume");
         pauseGameItem.setMnemonic(KeyEvent.VK_P);
-
-        final JMenuItem musicToggleItem = new JMenuItem("Music On/Off");
-        musicToggleItem.setMnemonic(KeyEvent.VK_M);
 
         final JMenuItem exitItem = new JMenuItem("Exit");
         exitItem.setMnemonic(KeyEvent.VK_X);
 
         newGameItem.addActionListener(e -> startNewGame());
+        endGameItem.addActionListener(e -> endGame());
         pauseGameItem.addActionListener(theEvent -> togglePauseResume());
-        musicToggleItem.addActionListener(e -> toggleMusic());
         exitItem.addActionListener(theEvent ->
                 myFrame.dispatchEvent(new WindowEvent(myFrame, WindowEvent.WINDOW_CLOSING)));
 
         gameMenu.add(newGameItem);
+        gameMenu.add(endGameItem);
         gameMenu.add(pauseGameItem);
-        gameMenu.add(musicToggleItem); // Add the music toggle menu item
         gameMenu.addSeparator();
         gameMenu.add(exitItem);
 
         return gameMenu;
     }
+
+
+    private JMenu buildOptionsMenu() {
+
+        final JMenu optionsMenu = new JMenu("Options");
+        optionsMenu.setMnemonic(KeyEvent.VK_O);
+
+        final JMenuItem toggleGridLines = createMenuItems("Toggle Gridlines",
+                KeyEvent.VK_T, e -> toggleGridlines());
+        final JMenuItem toggleGhostPiece = createMenuItems("Toggle Ghost Piece",
+                KeyEvent.VK_O, e -> toggleGhostPiece());
+        final JMenuItem setHardMode = createMenuItems("Set Hard Mode",
+                KeyEvent.VK_I, e -> setHardMode(toggleGridLines, toggleGhostPiece));
+        final JMenuItem musicToggleItem = createMenuItems("Music On/Off",
+                KeyEvent.VK_M, e -> toggleMusic());
+
+        optionsMenu.add(toggleGridLines);
+        optionsMenu.add(toggleGhostPiece);
+        optionsMenu.add(setHardMode);
+        optionsMenu.add(musicToggleItem);
+
+
+        return optionsMenu;
+    }
+
+    private JMenuItem createMenuItems(final String theText, final int theMnemonic,
+                                      final ActionListener theAction) {
+        final JMenuItem menuItem = new JMenuItem(theText);
+        menuItem.setMnemonic(theMnemonic);
+        menuItem.addActionListener(theAction);
+        return menuItem;
+    }
+
+    private void toggleGridlines() {
+        myBoardPanel.setGridlines(!myBoardPanel.getGridlines());
+    }
+    private void toggleGhostPiece() {
+        myBoardPanel.setGhostPieceState(!myBoardPanel.getGhostPieceState());
+
+    }
+    private void setHardMode(final JMenuItem theToggleGridlines,
+                             final JMenuItem theToggleGhostPiece) {
+        showAboutHardModeDialog();
+        startHardGame();
+        theToggleGridlines.setEnabled(false);
+        theToggleGhostPiece.setEnabled(false);
+    }
+
+    private JMenu buildHighScoreMenu() {
+        final String title = "High Scores";
+        final JMenu highScoreMenu = new JMenu(title);
+
+        final JMenuItem viewHighScores = new JMenuItem(title);
+        viewHighScores.addActionListener(e -> showHighScores());
+
+        highScoreMenu.add(viewHighScores);
+        return highScoreMenu;
+    }
+
+    private void showHighScores() {
+        final String highScoresText = buildHighScoresText();
+        displayHighScores(highScoresText);
+    }
+
+    private String buildHighScoresText() {
+        final HighScoreManager manager = new HighScoreManager();
+        final StringBuilder highScoresText = new StringBuilder("All Scores" + " :\n");
+
+        for (final HighScore hs : manager.getHighScores()) {
+            highScoresText.append(hs).append("\n");
+        }
+
+        return highScoresText.toString();
+    }
+
+    private void displayHighScores(final String theHighScoresText) {
+        JOptionPane.showMessageDialog(myFrame, theHighScoresText,
+                "Leaderboard", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+
 
     private JMenu buildHelpMenu() {
         final JMenu helpMenu = new JMenu("Help");
@@ -150,22 +274,42 @@ public final class TetrisGUI extends JPanel {
 
         helpMenu.add(howToPlayItem);
         helpMenu.add(aboutItem);
+
         return helpMenu;
+    }
+
+
+    private void updateOptionsMenu() {
+        if (myHardMode) {
+            myBoardPanel.setGridlines(false);
+            myBoardPanel.setGhostPieceState(false);
+        }
     }
 
     /**
      * Lays out the components for the Tetris GUI.
      * Sets the layout for the board, next piece, and scoreboard panels.
+     * Uses a JLayoredPanel to handel displaying the puse and game over message.
      */
     private void layoutComponents() {
-        setLayout(new BorderLayout());
-        add(myBoardPanel, BorderLayout.CENTER);
+        final int borderSize = 3;
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-        final JPanel rightPanel = new JPanel(new BorderLayout());
-        rightPanel.add(myNextPeicePanel, BorderLayout.NORTH);
-        rightPanel.add(myScoreBoardPanel, BorderLayout.CENTER);
+        final JPanel rightPanel = new JPanel();
+        rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
 
-        add(rightPanel, BorderLayout.EAST);
+        rightPanel.add(myNextPeicePanel);
+        rightPanel.add(myScoreBoardPanel);
+
+        final JPanel displayPanel = new JPanel();
+        myNextPeicePanel.setBorder(new LineBorder(Color.WHITE, borderSize));
+        myScoreBoardPanel.setBorder(new LineBorder(Color.WHITE, borderSize));
+
+        displayPanel.setLayout(new BoxLayout(displayPanel, BoxLayout.X_AXIS));
+        displayPanel.add(boardLayout());
+        displayPanel.add(rightPanel);
+
+        add(displayPanel);
 
         myFrame.setContentPane(this);
         myFrame.pack();
@@ -174,14 +318,34 @@ public final class TetrisGUI extends JPanel {
         myFrame.setResizable(false);
     }
 
+    private JLayeredPane boardLayout() {
+        final int borderSize = 3;
+        final Dimension boardSize = myBoardPanel.getPreferredSize();
+
+        final JLayeredPane layeredPane = new JLayeredPane();
+        layeredPane.setPreferredSize(boardSize);
+
+        myBoardPanel.setBounds(0, 0, boardSize.width, boardSize.height);
+        layeredPane.add(myBoardPanel, JLayeredPane.DEFAULT_LAYER);
+        myPauseEndPanel.setBounds(0, 0, boardSize.width, boardSize.height);
+        layeredPane.add(myPauseEndPanel, JLayeredPane.PALETTE_LAYER);
+
+        myBoardPanel.setBorder(new LineBorder(Color.WHITE, borderSize));
+
+        return layeredPane;
+    }
+
+
+
     /**
      * Adds necessary listeners to the GUI.
      * Includes the key listener for user input.
      */
     private void addListeners() {
-        myFrame.addKeyListener(new MyKeyAdapter());
-        myFrame.setFocusable(true);
-        myFrame.requestFocus(); // Ensure focus on the frame
+        // KeyListener for user input
+        addKeyListener(new MyKeyAdapter());
+        setFocusable(true);
+        requestFocusInWindow();
     }
 
     /**
@@ -189,11 +353,31 @@ public final class TetrisGUI extends JPanel {
      * Stops the game timer when the game is over.
      */
     private void addPropertyChangeListeners() {
-        myBoard.addPropertyChangeListener(PROPERTY_GAME_OVER_STATE, evt -> {
-            myTimer.stop();
-            myMusicPlayer.stopMusic();
-            myGameOver = true;
-        });
+        myBoard.addPropertyChangeListener(PROPERTY_GAME_OVER_STATE, this::gameOverHelper);
+        myScoreSystem.addPropertyChangeListener(PROPERTY_LEVEL_CHANGE,
+                this::increaseSpeedHalper);
+        myBoard.addPropertyChangeListener(PROPERTY_NEXT_PIECE_CHANGE,
+                this::resetRotateCounter);
+    }
+
+    /**
+     * Helper method to hold logic for the lambda addPropertyChangeListner.
+     */
+    private void gameOverHelper(final PropertyChangeEvent theEvent) {
+        final boolean isGameOver = (boolean) theEvent.getNewValue();
+        myTimer.stop();
+        myMusicPlayer.stopMusic();
+        myGameOver = true;
+        myPauseEndPanel.setGameOver(isGameOver);
+        promptForHighScore();
+    }
+
+    private void increaseSpeedHalper(final PropertyChangeEvent theEvent) {
+        final int oldVal = (int) theEvent.getOldValue();
+        final int newVal = (int) theEvent.getNewValue();
+        if (newVal > oldVal && myTimer.getDelay() >= 0) {
+            myTimer.setDelay(myTimer.getDelay() - DEFAULT_TIME_STEP);
+        }
     }
 
     /**
@@ -209,31 +393,76 @@ public final class TetrisGUI extends JPanel {
     }
 
     /**
+     * Helper Method to reset the rotation counter.
+     */
+    private void resetRotateCounter(final PropertyChangeEvent theEvent) {
+        myRotateCounter = 0;
+    }
+
+    /**
      * Starts a new game and notifies the user.
      * This method is called when a new game is started from the menu.
      */
     private void startNewGame() {
-        myBoard.newGame();
-        myTimer.start();
-        myGameOver = false;
-        myIsMuted = false; // Ensure music is unmuted for a new game
-        updateMusicState(); // Adjust music based on game state
-        myFrame.requestFocus(); // Ensure focus after starting a new game
+        if (myGameOver) { // Only allow starting a new game if the previous one is over
+            myBoard.newGame();  // Reset the game board
+            myTimer.start();    // Start the game timer
+            myGameOver = false; // Mark the game as active
+            myHardMode = false;
+            myIsMuted = false;  // Unmute music for the new game
+            myPauseEndPanel.setPaused(false);
+            myTimer.setDelay(DEFAULT_TIME_DELAY);
+            updateMusicState(); // Handle music playback
+            buildMenu();
+        }
     }
 
     /**
-     * Toggles between pausing and resuming the game and adjusts the music state.
+     * Starts a new game With Hard Mode Selected and notifies the user.
+     * This method is called when a new game is started from the menu.
+     */
+    private void startHardGame() {
+        myGameOver = true;
+        myBoard.newGame();
+        myTimer.start();
+        myMusicPlayer.startMusic(FILE_PATH);
+        myGameOver = false;
+        myHardMode = true;
+        myPauseEndPanel.setPaused(false);
+        updateOptionsMenu();
+
+    }
+
+    /**
+     * Starts a new game and notifies the user.
+     * This method is called when a new game is started from the menu.
+     */
+    private void endGame() {
+        if (!myGameOver) {
+            myTimer.stop();
+            myGameOver = true;
+            myHardMode = false;
+            myPauseEndPanel.setGameOver(true);
+            updateMusicState();
+            promptForHighScore();
+        }
+    }
+
+    /**
+     * Toggles between pausing and resuming the game and notifies the user.
+     * This method is triggered from the menu.
      */
     private void togglePauseResume() {
         if (!myGameOver) {
             if (myTimer.isRunning()) {
                 myTimer.stop();
+                myPauseEndPanel.setPaused(true);
             } else {
                 myTimer.start();
+                myPauseEndPanel.setPaused(false);
             }
             updateMusicState(); // Adjust music based on game state
         }
-        myFrame.requestFocus(); // Ensure focus after toggling
     }
 
     /**
@@ -242,11 +471,32 @@ public final class TetrisGUI extends JPanel {
     private void toggleMusic() {
         myIsMuted = !myIsMuted; // Toggle the muted state
         updateMusicState(); // Adjust music based on game state
-        myFrame.requestFocus(); // Restore focus to the frame after toggling
+    }
+
+    /**
+     * Prompts the user to enter their name for a new high score if the
+     * current score is greater than 0. If a valid name is entered, the
+     * score is saved using the HighScoreManager.
+     */
+    private void promptForHighScore() {
+        if (myScoreSystem.getScore() > 0) { // Optional: Check if score qualifies
+            final String playerName = JOptionPane.showInputDialog(
+                    myFrame,
+                    "Enter your name:",
+                    "Save Score?",
+                    JOptionPane.PLAIN_MESSAGE
+            );
+
+            if (playerName != null && !playerName.isEmpty()) {
+                final HighScoreManager manager = new HighScoreManager();
+                manager.addHighScore(new HighScore(playerName, myScoreSystem.getScore()));
+            }
+        }
     }
 
     /**
      * Displays a dialog with instructions on how to play the game.
+     * This method is triggered when "How to Play" is selected from the help menu.
      */
     private void showHowToPlayDialog() {
         JOptionPane.showMessageDialog(
@@ -256,15 +506,22 @@ public final class TetrisGUI extends JPanel {
                         1. Use arrow keys to move and rotate blocks.
                         2. Complete rows to clear them.
                         3. The game ends when blocks reach the top.
+                        
+                        Scoring:
+                        * 4 points per frozen piece.
+                        * 1 line = 40 points * level.
+                        * 2 lines = 100 points * level.
+                        * 3 lines = 300 points * level.
+                        * 4 lines = 1200 points * level.
                         """,
                 MENULABEL_HOWTOPLAY,
                 JOptionPane.INFORMATION_MESSAGE
         );
-        myFrame.requestFocus(); // Restore focus after dialog
     }
 
     /**
      * Displays a dialog with information about the game.
+     * This method is triggered when "About" is selected from the help menu.
      */
     private void showAboutDialog() {
         JOptionPane.showMessageDialog(
@@ -283,11 +540,38 @@ public final class TetrisGUI extends JPanel {
                 MENULABEL_ABOUT,
                 JOptionPane.INFORMATION_MESSAGE
         );
-        myFrame.requestFocus(); // Restore focus after dialog
+    }
+
+    /**
+     * Displays a dialog with information about The Hard Mode.
+     * This method is triggered when "About Hard Mode" is selected from the help menu.
+     */
+    private void showAboutHardModeDialog() {
+        JOptionPane.showMessageDialog(
+                myFrame,
+                """
+                        Tetris Game Hard Mode:
+                        
+                        Hard Mode disables
+                        GridLines and
+                        Ghost Piece.
+                        Rotation of Tetramino
+                        is limited to 4 Times
+                        Per Piece.
+                        
+                        Selecting Hard Mode
+                        Will start A new Game.
+                    
+                        Group 6""",
+                ABOUT_HARDMODE,
+                JOptionPane.INFORMATION_MESSAGE
+        );
     }
 
     /**
      * Main method to launch the application.
+     *
+     * @param theArgs Command line arguments, ignored.
      */
     public static void main(final String[] theArgs) {
         javax.swing.SwingUtilities.invokeLater(() -> new TetrisGUI("Tetris Game"));
@@ -297,6 +581,7 @@ public final class TetrisGUI extends JPanel {
      * Key adapter for handling user inputs.
      */
     private final class MyKeyAdapter extends KeyAdapter {
+
         @Override
         public void keyPressed(final KeyEvent theEvent) {
 
@@ -307,21 +592,36 @@ public final class TetrisGUI extends JPanel {
                         case KeyEvent.VK_RIGHT, KeyEvent.VK_D -> myBoard.right();
                         case KeyEvent.VK_DOWN, KeyEvent.VK_S -> myBoard.down();
                         case KeyEvent.VK_SPACE -> myBoard.drop();
-                        case KeyEvent.VK_UP, KeyEvent.VK_W -> myBoard.rotateCW();
+                        case KeyEvent.VK_UP, KeyEvent.VK_W -> rotateCW();
                         default -> {
-                            // No action for other keys
-                        }
+                        } // No action for other keys
                     }
                 }
+                otherEvents(theEvent);
+            }
+        }
 
-                if (theEvent.getKeyCode() == KeyEvent.VK_P) {
-                    togglePauseResume();
+        private void otherEvents(final KeyEvent theEvent) {
+            if (!myGameOver) {
+                switch (theEvent.getKeyCode()) {
+                    case KeyEvent.VK_P -> togglePauseResume();
+                    case KeyEvent.VK_E -> endGame();
+                    case KeyEvent.VK_M -> toggleMusic();
+                    default -> {
+                    }
                 }
             }
+        }
 
-            // Toggle music playback when 'm' is pressed
-            if (theEvent.getKeyCode() == KeyEvent.VK_M) {
-                toggleMusic();
+        private void rotateCW() {
+            if (myHardMode) {
+                final int four = 4;
+                if (myRotateCounter < four) {
+                    myBoard.rotateCW();
+                    myRotateCounter++;
+                }
+            } else {
+                myBoard.rotateCW();
             }
         }
     }

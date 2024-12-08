@@ -88,5 +88,4 @@ public class MusicPlayer {
     public boolean isPlaying() {
         return myMusicClip != null && myMusicClip.isRunning();
     }
-
 }

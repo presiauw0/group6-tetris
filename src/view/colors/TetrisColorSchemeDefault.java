@@ -20,6 +20,26 @@ public final class TetrisColorSchemeDefault implements TetrisColorScheme {
     public static final Color BORDER_COLOR = Color.gray;
 
     /**
+     * Default border color for ghost pieces.
+     */
+    public static final Color GHOST_BORDER_COLOR = new Color(255, 215, 0);
+
+    /**
+     * Score panel background color.
+     */
+    public static final Color SCORE_BG_COLOR = new Color(48, 48, 48);
+
+    /**
+     * Score panel foreground (text) color.
+     */
+    public static final Color SCORE_FG_COLOR = new Color(255, 215, 0);
+
+    /**
+     * Score panel instruction text color.
+     */
+    public static final Color INSTRUCTIONS_FG_COLOR = new Color(176, 176, 176);
+
+    /**
      * Color to be used if no specific color is found
      * for a particular piece.
      */

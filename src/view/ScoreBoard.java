@@ -4,6 +4,9 @@ import static view.score.PropertyChangeEnabledScoring.PROPERTY_SCORE_CHANGE;
 import static view.score.PropertyChangeEnabledScoring.PROPERTY_LEVEL_CHANGE;
 import static view.score.PropertyChangeEnabledScoring.PROPERTY_CLEARED_LINE_CHANGE;
 import static view.score.PropertyChangeEnabledScoring.LineStats;
+import static view.colors.TetrisColorSchemeDefault.SCORE_BG_COLOR;
+import static view.colors.TetrisColorSchemeDefault.SCORE_FG_COLOR;
+import static view.colors.TetrisColorSchemeDefault.INSTRUCTIONS_FG_COLOR;
 
 import java.awt.Color;
 import java.awt.GridLayout;
@@ -25,14 +28,6 @@ import view.score.ScoringSystem;
  * @version 1.2
  */
 public class ScoreBoard extends JPanel implements PropertyChangeListener {
-    /**
-     *  Constant for the amount of rows needed in Control directions
-     */
-    private static final int INSTRUCTION_ROW = 7;
-    /**
-     *   Constant for the amount of columns needed in Control directions
-     */
-    private static final int INSTRUCTION_COLS = 1;
     /**
      * Constant for the rows needed for the live scoreboard
      */
@@ -73,11 +68,6 @@ public class ScoreBoard extends JPanel implements PropertyChangeListener {
      */
     private final JLabel myNextLevelLabel;
 
-    /**
-     * Store an instance of the ScoringSystem factory instance.
-     */
-    private final PropertyChangeEnabledScoring myScoringSystem;
-
 
     /**
      * Constructs the scoreboard panel.
@@ -85,16 +75,16 @@ public class ScoreBoard extends JPanel implements PropertyChangeListener {
     public ScoreBoard() {
         super();
 
-        myScoringSystem = ScoringSystem.getInstance();
-        myScoringSystem.addPropertyChangeListener(this);
+        final PropertyChangeEnabledScoring scoringSystem = ScoringSystem.getInstance();
+        scoringSystem.addPropertyChangeListener(this);
 
-        myScoreLabel = new JLabel(SCORE_LABEL_TEXT + myScoringSystem.getScore(),
+        myScoreLabel = new JLabel(SCORE_LABEL_TEXT + scoringSystem.getScore(),
                 SwingConstants.CENTER);
-        myLinesLabel = new JLabel(LINES_LABEL_TEXT + myScoringSystem.getTotalLinesCleared(),
+        myLinesLabel = new JLabel(LINES_LABEL_TEXT + scoringSystem.getTotalLinesCleared(),
                 SwingConstants.CENTER);
-        myLevelLabel = new JLabel(LEVEL_LABEL_TEXT + myScoringSystem.getLevel(),
+        myLevelLabel = new JLabel(LEVEL_LABEL_TEXT + scoringSystem.getLevel(),
                 SwingConstants.CENTER);
-        myNextLevelLabel = new JLabel(buildNextLevelText(myScoringSystem.getNextLevelLines()),
+        myNextLevelLabel = new JLabel(buildNextLevelText(scoringSystem.getNextLevelLines()),
                 SwingConstants.CENTER);
 
         initialize();
@@ -104,7 +94,13 @@ public class ScoreBoard extends JPanel implements PropertyChangeListener {
      * Initializes the scoreboard panel.
      */
     private void initialize() {
-        setBackground(Color.GREEN);
+
+        setBackground(SCORE_BG_COLOR);
+
+        myScoreLabel.setForeground(SCORE_FG_COLOR);
+        myLinesLabel.setForeground(SCORE_FG_COLOR);
+        myLevelLabel.setForeground(SCORE_FG_COLOR);
+        myNextLevelLabel.setForeground(SCORE_FG_COLOR);
 
         setLayout(new GridLayout(2, 1));
 
@@ -123,17 +119,23 @@ public class ScoreBoard extends JPanel implements PropertyChangeListener {
     private JPanel createControlsPanel() {
         final JPanel controlsPanel = new JPanel();
 
-        controlsPanel.setLayout(new GridLayout(INSTRUCTION_ROW, INSTRUCTION_COLS));
-
         controlsPanel.setOpaque(false);
 
-        controlsPanel.add(new JLabel("Move Left: Left/D key"));
-        controlsPanel.add(new JLabel("Move Right: Right/A key"));
-        controlsPanel.add(new JLabel("Move Down: Down/S key"));
-        controlsPanel.add(new JLabel("Rotate: Up/W key"));
-        controlsPanel.add(new JLabel("Drop: SPACE"));
-        controlsPanel.add(new JLabel("Pause: P"));
-        controlsPanel.add(new JLabel("Mute: M"));
+        final JLabel txtInstructions = new JLabel(
+                """
+                <html>
+                Move Left: Left/D key<br>
+                Move Right: Right/A key<br>
+                Move Down: Down/S key<br>
+                Rotate: Up/W key<br>
+                Drop: SPACE<br>
+                Pause: P<br>
+                Mute: M<br>
+                </html>
+                """);
+        txtInstructions.setForeground(INSTRUCTIONS_FG_COLOR);
+
+        controlsPanel.add(txtInstructions);
 
         controlsPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 

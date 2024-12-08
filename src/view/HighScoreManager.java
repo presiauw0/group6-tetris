@@ -18,7 +18,7 @@ import java.util.logging.Logger;
  * @author Abdulrahman Hassan and Balkirat (for checkstlye)
  * @version Autumn 2024
  */
-public class HighScoreManager {
+public class HighScoreManager implements HighScoreManagerInterface {
 
     /** Logger for logging errors and events. */
     private static final Logger LOGGER = Logger.getLogger(HighScoreManager.class.getName());
@@ -57,6 +57,7 @@ public class HighScoreManager {
      *
      * @param theScore the HighScore object to add
      */
+    @Override
     public void addHighScore(final HighScore theScore) {
         myHighScores.add(theScore);
         myHighScores.sort(Comparator.comparingInt(HighScore::getScore).reversed());
@@ -69,6 +70,7 @@ public class HighScoreManager {
     /**
      * Clears all high scores from the list and updates the high score file.
      */
+    @Override
     public void clearHighScores() {
         myHighScores.clear();
         saveHighScores();
@@ -79,6 +81,7 @@ public class HighScoreManager {
      *
      * @return a list of HighScore objects
      */
+    @Override
     public List<HighScore> getHighScores() {
         return myHighScores;
     }

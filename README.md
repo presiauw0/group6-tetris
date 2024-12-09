@@ -4,7 +4,7 @@
 
 - **Abdulrahman Hassan**  - 
 
-- **Khalid Rashid**  - For sprint 3 I prioritized working on the Tetris GUI and visual displays. I modified the layout to create Borders on each panel. I added A new class Called PauseEndPanel that displays An overlayed panel with a message for when the Game is over or paused. I also added an extra credit feature called "Hard Mode". I created a TetrisMenuBuilder class that resolved the "too many Methods" warning but this would require that the TetrisGUI has public methods so this class was removed and is currently within the sp3-Khalid-RefactorTetrisGUI Branch. I also Modified the Menu's in the Tetris GUI to fix all checkstyle warning and added JavaDoc. I created an Interface for the PauseEndPanel as well.
+- **Khalid Rashid**  - For sprint 3 I prioritized working on the Tetris GUI and visual displays. I modified the layout to create Borders on each panel. I added A new class Called PauseEndPanel that displays An overlay panel with a message for when the Game is over or paused. I also added an extra credit feature called "Hard Mode". I created a TetrisMenuBuilder class that resolved the "too many Methods" warning but this would require that the TetrisGUI has public methods so this class was removed and is currently within the sp3-Khalid-RefactorTetrisGUI Branch. I also Modified the Menus in the Tetris GUI to fix all checkstyle warnings and added JavaDoc. I created an Interface for the PauseEndPanel as well.
 
 - **Preston Sia**  - For Sprint 3, I focused on adding the ghost piece and its functionality, reworking much of the code for the score panel, and refining the high score classes. I also contributed minor fixes throughout the project, assisted with Git management, found a new music track to use, and updated the Tetris game’s color scheme 
   
@@ -30,15 +30,22 @@ https://docs.google.com/document/d/1t1GBRbn3ie9kqzf1RISrKNz63RstirhpWDuxcXZ7i9c/
 
 ## Sprint 3 Comments
 ### Location of Implementation -
+Code that calculates the amount of line to reach the next level -
+- Class - view/score/ScoringSystem
+- Line # - 197
+Location of scoring algorithm -
+- Class - view/score/ScoringSystem
 
 ### Issues -
-- **Issue 1**: 
-- **Idea 1**: 
-- **Code Weirdness 1**:
+- **Issue 1**: - Linting - 'public' method 'paintComponent()' is not exposed via an interface - result of swing so we are choosing to ignore (it is an overridden class)
+- **Issue 2**: - Law of Demeter - Choosing to ignore
+- **Issue 3**: - Too many Fields/Methods - so we tried to fix this issue by spitting up the TetrisGUI into multiple classes but that ended up causing more problems then expected with little time to resolve so we choose to revert to original with said warnings.
+- **Idea 1**: N/A
+- **Code Weirdness 1**: Linting Tool settings were overridden - we attempted to restore the settings based on the original configuration file but if there are any unforeseen warnings it is likely the result of the differences between our linting tool settings and the original configuration.
 
 **Required Extra Feature**
 
-- JAR File - A runnable JAR file of the Tetris game was implemented.
+- JAR File - A runnable JAR file of the Tetris game was implemented. It is in the JAR folder in the root.
 
 **Extra Credit Features**
 

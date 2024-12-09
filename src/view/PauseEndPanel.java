@@ -15,7 +15,17 @@ import javax.swing.JPanel;
  * @author Khalid Rashid
  * @version autumn 2024
  */
-public final class PauseEndPanel extends JPanel {
+public final class PauseEndPanel extends JPanel implements IPauseEndPanel {
+
+    /**
+     * A string that holds the message displayed on a Game Over Panel.
+     */
+    private static final String GAME_OVER = "Game Over";
+
+    /**
+     * A string that holds the message displayed on a Game Over Panel.
+     */
+    private static final String GAME_PAUSED = "Game Paused";
 
     /**
      * Indicates whether the game is over or not.
@@ -43,10 +53,10 @@ public final class PauseEndPanel extends JPanel {
      * Displays the Game over screen.
      * @param theGameOver a boolean that returns whether the game is over or not.
      */
+    @Override
     public void setGameOver(final boolean theGameOver) {
         myGameOver = theGameOver;
-        //myPaused = false;
-        setPauseEnd(myGameOver || myPaused);
+        setVisible(myGameOver);
         repaint();
     }
 
@@ -54,23 +64,24 @@ public final class PauseEndPanel extends JPanel {
      * Displays the Game Paused screen.
      * @param thePaused A boolean that determins if the game is paused
      */
+    @Override
     public void setPaused(final boolean thePaused) {
         myPaused = thePaused;
-        setPauseEnd(myGameOver || myPaused);
+        setVisible(myPaused);
         repaint();
     }
 
 
-    private void setPauseEnd(final boolean thePauseEnd) {
-        setVisible(thePauseEnd);
-    }
-
+    /**
+     * A helper method that determines what string to pass when the panel is displayed.
+     * @return A string holding the message to display based on Game state.
+     */
     private String getGameState() {
         final String result;
         if (myGameOver) {
-            result = "Game Over";
+            result = GAME_OVER;
         } else {
-            result = "Paused";
+            result = GAME_PAUSED;
         }
         return result;
     }

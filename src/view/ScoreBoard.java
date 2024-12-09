@@ -124,8 +124,8 @@ public class ScoreBoard extends JPanel implements PropertyChangeListener {
         final JLabel txtInstructions = new JLabel(
                 """
                 <html>
-                Move Left: Left/D key<br>
-                Move Right: Right/A key<br>
+                Move Left: Left/A key<br>
+                Move Right: Right/D key<br>
                 Move Down: Down/S key<br>
                 Rotate: Up/W key<br>
                 Drop: SPACE<br>

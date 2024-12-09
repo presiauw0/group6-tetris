@@ -4,7 +4,7 @@
 
 - **Abdulrahman Hassan**  - 
 
-- **Khalid Rashid**  - 
+- **Khalid Rashid**  - For sprint 3 I prioritized working on the Tetris GUI and visual displays. I modified the layout to create Borders on each panel. I added A new class Called PauseEndPanel that displays An overlayed panel with a message for when the Game is over or paused. I also added an extra credit feature called "Hard Mode". I created a TetrisMenuBuilder class that resolved the "too many Methods" warning but this would require that the TetrisGUI has public methods so this class was removed and is currently within the sp3-Khalid-RefactorTetrisGUI Branch. I also Modified the Menu's in the Tetris GUI to fix all checkstyle warning and added JavaDoc. I created an Interface for the PauseEndPanel as well.
 
 - **Preston Sia**  -
   
@@ -44,6 +44,7 @@ https://docs.google.com/document/d/1t1GBRbn3ie9kqzf1RISrKNz63RstirhpWDuxcXZ7i9c/
 
 - Background Music - Added background music to the Tetris game that starts automatically when a new game begins and stops when the game is paused or ends. Implemented functionality where pressing the M key toggles the music on and off, allowing players to control the background music easily.
 - Toggle Music ON/OFF - Added an option in the game’s settings menu that allows players to toggle the background music on and off directly through the interface. This feature provides an additional, user-friendly way to control the music alongside the M key functionality.
+- Hard Mode - An option to enter "Hard Mode". This disables the grid Lines and Ghost Piece. It also limits the number of times a user can Rotate a piece to 4 times (achieving a full piece rotation).
 
 
 

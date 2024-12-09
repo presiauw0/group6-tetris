@@ -57,10 +57,12 @@ Location of scoring algorithm -
 - Hard Mode - An option to enter "Hard Mode". This disables the grid Lines and Ghost Piece. It also limits the number of times a user can Rotate a piece to 4 times (achieving a full piece rotation).
 
 
+### Sources/Citations
+Music
+ - "Tetris - A Theme", https://bitmidi.com/tetris-a-theme-mid
 
-
-
-
-
+Resources:
+ - "Multiline text in JLabel", https://stackoverflow.com/questions/685521/multiline-text-in-jlabel
+ - "How to build JARs from IntelliJ IDEA properly?", https://stackoverflow.com/questions/1082580/how-to-build-jars-from-intellij-idea-properly
 
   

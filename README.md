@@ -2,7 +2,7 @@
 
 ## Sprint 3 Contribution
 
-- **Abdulrahman Hassan**  - 
+- **Abdulrahman Hassan**  - I focused on implementing the scoring algorithm which regularly updates the current score, current level, and total number of lines for sprint 3. I worked to make sure that the scoring updated during gameplay which gives real-time feedback. The scoring system needed to be communicated by the GUI which Preston helped me with. Also, I worked on a special feature that allowed scores to be saved and it would display your top 10 scores. I also implemented a clear scores option giving you the ability to clear your high scores.
 
 - **Khalid Rashid**  - For sprint 3 I prioritized working on the Tetris GUI and visual displays. I modified the layout to create Borders on each panel. I added A new class Called PauseEndPanel that displays An overlay panel with a message for when the Game is over or paused. I also added an extra credit feature called "Hard Mode". I created a TetrisMenuBuilder class that resolved the "too many Methods" warning but this would require that the TetrisGUI has public methods so this class was removed and is currently within the sp3-Khalid-RefactorTetrisGUI Branch. I also Modified the Menus in the Tetris GUI to fix all checkstyle warnings and added JavaDoc. I created an Interface for the PauseEndPanel as well.
 

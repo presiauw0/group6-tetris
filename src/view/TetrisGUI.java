@@ -690,7 +690,6 @@ public final class TetrisGUI extends JPanel {
             if (!myGameOver) {
                 switch (theEvent.getKeyCode()) {
                     case KeyEvent.VK_P -> togglePauseResume();
-                    case KeyEvent.VK_E -> endGame();
                     case KeyEvent.VK_M -> toggleMusic();
                     default -> {
                     }

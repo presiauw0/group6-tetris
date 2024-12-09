@@ -368,7 +368,8 @@ public class TetrisBoardPanel extends JPanel
      * @return The x-coordinate in blocks
      */
     private int getHorizontalCenterOffset(final TetrisPiece thePiece) {
-        return (myBoardWidth / 2) - (int) Math.ceil(thePiece.getWidth() / 2.0);
+        final double divisor = 2.0;
+        return (myBoardWidth / 2) - (int) Math.ceil(thePiece.getWidth() / divisor);
     }
 
 

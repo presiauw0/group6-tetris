@@ -26,7 +26,7 @@ import view.colors.TetrisColorSchemeDefault;
  *  Creates a Panel to display the Next Tetris piece.
  *
  * @author Khalid Rashid
- * @version 1.1
+ * @version autumn 2024
  */
 public class NextPeice extends JPanel implements PropertyChangeListener {
 

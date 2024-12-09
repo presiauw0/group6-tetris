@@ -33,6 +33,7 @@ https://docs.google.com/document/d/1t1GBRbn3ie9kqzf1RISrKNz63RstirhpWDuxcXZ7i9c/
 Code that calculates the amount of line to reach the next level -
 - Class - view/score/ScoringSystem
 - Line # - 197
+
 Location of scoring algorithm -
 - Class - view/score/ScoringSystem
 

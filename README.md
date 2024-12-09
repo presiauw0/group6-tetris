@@ -32,16 +32,18 @@ https://docs.google.com/document/d/1t1GBRbn3ie9kqzf1RISrKNz63RstirhpWDuxcXZ7i9c/
 ### Location of Implementation -
 
 ### Issues -
-- **Issue 1**: In the TetrisBoardPanel we have a small checkstyle warning in which we have 12 exectuable statments instead of the 10. We will look to fix this in the 3rd sprint.
-- **Idea 1**: Khalid would like to tinker around with the round edges that we see in the mac version when playing tetris (just something cosmetic).
-- **Code Weirdness 1**: N/A
+- **Issue 1**: 
+- **Idea 1**: 
+- **Code Weirdness 1**:
 
 **Required Extra Feature**
 
--
+- JAR File - 
 
 **Extra Credit Features**
 
+- Save Highscore - 
+- Ghost Piece -
 - Background Music - Added background music to the Tetris game that starts automatically when a new game begins and stops when the game is paused or ends. Implemented functionality where pressing the M key toggles the music on and off, allowing players to control the background music easily.
 - Toggle Music ON/OFF - Added an option in the game’s settings menu that allows players to toggle the background music on and off directly through the interface. This feature provides an additional, user-friendly way to control the music alongside the M key functionality.
 - Hard Mode - An option to enter "Hard Mode". This disables the grid Lines and Ghost Piece. It also limits the number of times a user can Rotate a piece to 4 times (achieving a full piece rotation).

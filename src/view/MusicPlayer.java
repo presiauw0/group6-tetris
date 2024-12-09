@@ -15,7 +15,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
  * @author balkiratsingh
  * @version 1.1
  */
-public class MusicPlayer {
+public class MusicPlayer implements MusicPlayerInterface {
 
     /** Logger for logging errors. */
     private static final Logger LOGGER = Logger.getLogger(MusicPlayer.class.getName());
@@ -39,6 +39,7 @@ public class MusicPlayer {
      * @throws NullPointerException if theFilePath is null.
      *         This must be handled before calling the method.
      */
+    @Override
     public void startMusic(final String theFilePath) {
         try {
             // Load the music file
@@ -65,6 +66,7 @@ public class MusicPlayer {
     /**
      * Stops the background music if it is playing.
      */
+    @Override
     public void stopMusic() {
         if (myMusicClip != null && myMusicClip.isRunning()) {
             myMusicClip.stop();
@@ -74,6 +76,7 @@ public class MusicPlayer {
     /**
      * Closes the audio resources.
      */
+    @Override
     public void close() {
         if (myMusicClip != null) {
             myMusicClip.close();
@@ -85,6 +88,7 @@ public class MusicPlayer {
      *
      * @return true if music is playing, false otherwise.
      */
+    @Override
     public boolean isPlaying() {
         return myMusicClip != null && myMusicClip.isRunning();
     }

@@ -75,17 +75,6 @@ public class HighScoreManager implements HighScoreManagerInterface {
      * the exception stack trace is printed.
      */
     private void saveHighScores() {
-        /*
-        try  {
-            final ObjectOutputStream oos =
-                    new ObjectOutputStream(new FileOutputStream(HIGH_SCORE_FILE));
-            oos.writeObject(myHighScores);
-            oos.close();
-        } catch (final IOException | SecurityException e) {
-            // IOException, SecurityException, FileNotFoundException
-            //e.printStackTrace();
-            LOGGER.severe("An IO error occured: " + e);
-        }*/
         try {
             final FileOutputStream fos = new FileOutputStream(HIGH_SCORE_FILE);
 
@@ -133,17 +122,6 @@ public class HighScoreManager implements HighScoreManagerInterface {
     @SuppressWarnings("unchecked")
     private List<HighScoreInterface> loadHighScores() {
         List<HighScoreInterface> highScoreList;
-        /*
-        try  {
-            final ObjectInputStream ois =
-                    new ObjectInputStream(new FileInputStream(HIGH_SCORE_FILE));
-            highScoreList = (List<HighScore>) ois.readObject();
-            ois.close();
-        } catch (final IOException | ClassNotFoundException e) {
-            LOGGER.warning("Unable to load high scores: " + e);
-            highScoreList = new ArrayList<>();
-        }
-        return highScoreList;*/
 
         try {
             final FileInputStream fis = new FileInputStream(HIGH_SCORE_FILE);

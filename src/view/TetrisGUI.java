@@ -54,6 +54,9 @@ public final class TetrisGUI extends JPanel {
     /** Fixed file path for my Tetris background music */
     private static final String FILE_PATH = "src/view/sound/m1.wav";
 
+    /** Label for the about dialog box */
+    private static final String HIGH_SCORES = "High Scores:\n";
+
     /** Music player for background music. */
     private final MusicPlayer myMusicPlayer;
 
@@ -146,6 +149,11 @@ public final class TetrisGUI extends JPanel {
         myFrame.setJMenuBar(menuBar);
     }
 
+    /**
+     * A helper method that builds the game menu.
+     * includes stateing a game, ending it, pausing and exiting the window.
+     * @return the game menu.
+     */
     private JMenu buildGameMenu() {
         final JMenu gameMenu = new JMenu("Game");
 
@@ -179,6 +187,12 @@ public final class TetrisGUI extends JPanel {
     }
 
 
+    /**
+     * A Helper method that Builds the Options menu.
+     * Includes toggling gridlines or ghost Piece.
+     * it also has an option to start the hard mode and toggle the music on or off.
+     * @return the Options Menu.
+     */
     private JMenu buildOptionsMenu() {
 
         final JMenu optionsMenu = new JMenu("Options");
@@ -202,6 +216,15 @@ public final class TetrisGUI extends JPanel {
         return optionsMenu;
     }
 
+    /**
+     * A helper method that creates a menu Item.
+     * simplifies the lamday expressions in the building menu classes.
+     *
+     * @param theText the Title of A menu Item
+     * @param theMnemonic The Mnemonic of a menu Item (Key Event)
+     * @param theAction The action resuklting from the Event.
+     * @return A menu item based on parameters passed in.
+     */
     private JMenuItem createMenuItems(final String theText, final int theMnemonic,
                                       final ActionListener theAction) {
         final JMenuItem menuItem = new JMenuItem(theText);
@@ -210,13 +233,26 @@ public final class TetrisGUI extends JPanel {
         return menuItem;
     }
 
+    /**
+     * A Helper method that Toggles the Gridlines.
+     */
     private void toggleGridlines() {
         myBoardPanel.setGridlines(!myBoardPanel.getGridlines());
     }
+    /**
+     * A Helper method that Toggles the Ghost piece.
+     */
     private void toggleGhostPiece() {
         myBoardPanel.setGhostPieceState(!myBoardPanel.getGhostPieceState());
 
     }
+
+    /**
+     * A helper method that starts the Hard mode.
+     * It disabled the Gridline and Ghost Piece Function.
+     * @param theToggleGridlines A menu item to disable the Gridline button.
+     * @param theToggleGhostPiece A menu item to disable the Ghost Piece button.
+     */
     private void setHardMode(final JMenuItem theToggleGridlines,
                              final JMenuItem theToggleGhostPiece) {
         showAboutHardModeDialog();
@@ -225,53 +261,81 @@ public final class TetrisGUI extends JPanel {
         theToggleGhostPiece.setEnabled(false);
     }
 
+    /**
+     * A helper Method that Builds the High Score menu.
+     * @return the High score Menu.
+     */
     private JMenu buildHighScoreMenu() {
         // Create the "High Scores" menu
-        final JMenu highScoreMenu = new JMenu("High Scores");
+        final JMenu highScoreMenu = new JMenu(" High Scores ");
 
         // Menu item for viewing high scores
         final JMenuItem viewHighScores = new JMenuItem("View High Scores");
-        viewHighScores.addActionListener(e -> {
-            final HighScoreManager manager = new HighScoreManager();
-            final StringBuilder highScoresText = new StringBuilder("High Scores:\n");
-            for (final HighScore hs : manager.getHighScores()) {
-                highScoresText.append(hs).append("\n");
-            }
-            JOptionPane.showMessageDialog(
-                    myFrame,
-                    !highScoresText.isEmpty() ? highScoresText.toString() : "No high scores available.",
-                    "High Scores",
-                    JOptionPane.INFORMATION_MESSAGE
-            );
-        });
+        viewHighScores.addActionListener(e -> displayHighScores());
 
         // Menu item for clearing high scores
         final JMenuItem clearHighScores = new JMenuItem("Clear High Scores");
-        clearHighScores.addActionListener(e -> {
-            final int confirmation = JOptionPane.showConfirmDialog(
-                    myFrame,
-                    "Are you sure you want to clear all high scores?",
-                    "Confirm Clear High Scores",
-                    JOptionPane.YES_NO_OPTION
-            );
-
-            if (confirmation == JOptionPane.YES_OPTION) {
-                final HighScoreManager manager = new HighScoreManager();
-                manager.clearHighScores();
-                JOptionPane.showMessageDialog(
-                        myFrame,
-                        "All high scores have been cleared.",
-                        "High Scores Cleared",
-                        JOptionPane.INFORMATION_MESSAGE
-                );
-            }
-        });
+        clearHighScores.addActionListener(e -> displayClearScores());
 
         highScoreMenu.add(viewHighScores);
         highScoreMenu.add(clearHighScores);
         return highScoreMenu;
     }
 
+    /**
+     * Displays the high scores using a dialog box.
+     */
+    private void displayHighScores() {
+        final HighScoreManagerInterface manager = new HighScoreManager();
+        final StringBuilder highScoresText = new StringBuilder(HIGH_SCORES);
+
+        for (final HighScoreInterface hs : manager.getHighScores()) {
+            highScoresText.append(hs).append("\n");
+        }
+
+        final String message;
+        if (highScoresText.length() > HIGH_SCORES.length()) {
+            message = highScoresText.toString();
+        } else {
+            message = "No high scores available.";
+        }
+
+        JOptionPane.showMessageDialog(
+                myFrame,
+                message,
+                "High Scores",
+                JOptionPane.INFORMATION_MESSAGE
+        );
+    }
+
+    /**
+     * Displays the clear score prompts using a dialog box.
+     */
+    private void displayClearScores() {
+        final int confirmation = JOptionPane.showConfirmDialog(
+                myFrame,
+                "Are you sure you want to clear all high scores?",
+                "Confirm Clear High Scores",
+                JOptionPane.YES_NO_OPTION
+        );
+
+        if (confirmation == JOptionPane.YES_OPTION) {
+            final HighScoreManagerInterface manager = new HighScoreManager();
+            manager.clearHighScores();
+            JOptionPane.showMessageDialog(
+                    myFrame,
+                    "All high scores have been cleared.",
+                    "High Scores Cleared",
+                    JOptionPane.INFORMATION_MESSAGE
+            );
+        }
+    }
+
+    /**
+     * A helper method that Builds a "help" menu.
+     * Has the About section and How to play info.
+     * @return the Help Menu
+     */
     private JMenu buildHelpMenu() {
         final JMenu helpMenu = new JMenu("Help");
         helpMenu.setMnemonic(KeyEvent.VK_H);
@@ -292,6 +356,9 @@ public final class TetrisGUI extends JPanel {
     }
 
 
+    /**
+     * A helper Method that Disables the Gridlines When Hard mode is on.
+     */
     private void updateOptionsMenu() {
         if (myHardMode) {
             myBoardPanel.setGridlines(false);
@@ -331,6 +398,11 @@ public final class TetrisGUI extends JPanel {
         myFrame.setResizable(false);
     }
 
+    /**
+     * A helper method that displays the Game Board.
+     * It also overlays the Pause and Game over panels.
+     * @return the Board Panel Layout.
+     */
     private JLayeredPane boardLayout() {
         final int borderSize = 3;
         final Dimension boardSize = myBoardPanel.getPreferredSize();
@@ -501,7 +573,7 @@ public final class TetrisGUI extends JPanel {
             );
 
             if (playerName != null && !playerName.isEmpty()) {
-                final HighScoreManager manager = new HighScoreManager();
+                final HighScoreManagerInterface manager = new HighScoreManager();
                 manager.addHighScore(new HighScore(playerName, myScoreSystem.getScore()));
             }
         }

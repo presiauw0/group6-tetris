@@ -510,10 +510,11 @@ public final class TetrisGUI extends JPanel {
         myGameOver = true;
         myBoard.newGame();
         myTimer.start();
-        myMusicPlayer.startMusic(FILE_PATH);
+        myIsMuted = false;
         myGameOver = false;
         myHardMode = true;
         myPauseEndPanel.setPaused(false);
+        updateMusicState();
         updateOptionsMenu();
 
     }

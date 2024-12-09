@@ -1,10 +1,15 @@
 package view;
 
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Manages the high scores for a game, including adding new high scores,
@@ -16,9 +21,14 @@ import java.util.List;
 public class HighScoreManager {
 
     /**
+     * Logger for logging logs.
+     */
+    public static final Logger LOGGER = Logger.getLogger(HighScoreManager.class.getName());
+
+    /**
      * The name of the file where high scores are saved.
      */
-    private static final String HIGH_SCORE_FILE = "highscores.txt";
+    private static final String HIGH_SCORE_FILE = "highscores.sav";
 
     /**
      * The maximum number of high scores to store.
@@ -28,7 +38,7 @@ public class HighScoreManager {
     /**
      * The list of high scores.
      */
-    private final List<HighScore> highScores;
+    private final List<HighScore> myHighScores;
 
     /**
      * Constructs a new HighScoreManager and initializes the high scores
@@ -36,7 +46,7 @@ public class HighScoreManager {
      */
     public HighScoreManager() {
         super();
-        highScores = loadHighScores();
+        myHighScores = loadHighScores();
     }
 
     /**
@@ -44,13 +54,13 @@ public class HighScoreManager {
      * by score, and if the list exceeds the maximum number of high scores,
      * the lowest score is removed. The updated list is then saved to the file.
      *
-     * @param score the HighScore object to add
+     * @param theScore the HighScore object to add
      */
-    public void addHighScore(final HighScore score) {
-        highScores.add(score);
-        highScores.sort(Comparator.comparingInt(HighScore::getScore).reversed());
-        if (highScores.size() > MAX_HIGH_SCORES) {
-            highScores.removeLast();
+    public void addHighScore(final HighScore theScore) {
+        myHighScores.add(theScore);
+        myHighScores.sort(Comparator.comparingInt(HighScore::getScore).reversed());
+        if (myHighScores.size() > MAX_HIGH_SCORES) {
+            myHighScores.removeLast();
         }
         saveHighScores();
     }
@@ -59,7 +69,7 @@ public class HighScoreManager {
      * Clears all high scores from the list and updates the high score file.
      */
     public void clearHighScores() {
-        highScores.clear();
+        myHighScores.clear();
         saveHighScores();
     }
 
@@ -69,7 +79,7 @@ public class HighScoreManager {
      * @return a list of HighScore objects
      */
     public List<HighScore> getHighScores() {
-        return highScores;
+        return myHighScores;
     }
 
     /**
@@ -77,10 +87,52 @@ public class HighScoreManager {
      * the exception stack trace is printed.
      */
     private void saveHighScores() {
-        try (final ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(HIGH_SCORE_FILE))) {
-            oos.writeObject(highScores);
-        } catch (final IOException e) {
-            e.printStackTrace();
+        /*
+        try  {
+            final ObjectOutputStream oos =
+                    new ObjectOutputStream(new FileOutputStream(HIGH_SCORE_FILE));
+            oos.writeObject(myHighScores);
+            oos.close();
+        } catch (final IOException | SecurityException e) {
+            // IOException, SecurityException, FileNotFoundException
+            //e.printStackTrace();
+            LOGGER.severe("An IO error occured: " + e);
+        }*/
+        try {
+            final FileOutputStream fos = new FileOutputStream(HIGH_SCORE_FILE);
+
+            try {
+                final ObjectOutputStream oos = new ObjectOutputStream(fos);
+                oos.writeObject(myHighScores);
+                oos.close();
+            } catch (final IOException | SecurityException e) {
+                LOGGER.severe("An IO error occured: " + e);
+            }
+
+            fos.close();
+        } catch (final IOException fosException) {
+            LOGGER.warning("Unable to write high scores: " + fosException);
+        }
+    }
+
+    private void createEmptyFile() {
+        final List<HighScore> emptyList = new ArrayList<>();
+
+        try {
+            final FileOutputStream fos = new FileOutputStream(HIGH_SCORE_FILE);
+
+            try {
+                final ObjectOutputStream oos = new ObjectOutputStream(fos);
+                oos.writeObject(emptyList);
+                oos.close();
+            } catch (final IOException | SecurityException e) {
+                LOGGER.severe("Unable to write new high score file: " + e);
+            }
+
+            fos.close();
+        } catch (final IOException fosException) {
+            LOGGER.warning("Unable to create high scores file: "
+                    + fosException);
         }
     }
 
@@ -92,10 +144,44 @@ public class HighScoreManager {
      */
     @SuppressWarnings("unchecked")
     private List<HighScore> loadHighScores() {
-        try (final ObjectInputStream ois = new ObjectInputStream(new FileInputStream(HIGH_SCORE_FILE))) {
-            return (List<HighScore>) ois.readObject();
+        List<HighScore> highScoreList;
+        /*
+        try  {
+            final ObjectInputStream ois =
+                    new ObjectInputStream(new FileInputStream(HIGH_SCORE_FILE));
+            highScoreList = (List<HighScore>) ois.readObject();
+            ois.close();
         } catch (final IOException | ClassNotFoundException e) {
-            return new ArrayList<>();
+            LOGGER.warning("Unable to load high scores: " + e);
+            highScoreList = new ArrayList<>();
         }
+        return highScoreList;*/
+
+        try {
+            final FileInputStream fis = new FileInputStream(HIGH_SCORE_FILE);
+
+            // Read from ObjectInputStream
+            try {
+                final ObjectInputStream ois = new ObjectInputStream(fis);
+                highScoreList = (List<HighScore>) ois.readObject();
+                ois.close();
+            } catch (final IOException | ClassNotFoundException oisException) {
+                LOGGER.warning("Unable to load high scores: " + oisException);
+                highScoreList = new ArrayList<>();
+            }
+
+            fis.close();
+        } catch (final IOException fisException) {
+            // if it can't find the file, create a new file
+            if (fisException instanceof FileNotFoundException) {
+                createEmptyFile();
+            } else {
+                LOGGER.warning("Unable to read high scores: " + fisException);
+            }
+            highScoreList = new ArrayList<>();
+        }
+
+        // return list of high scores
+        return highScoreList;
     }
 }

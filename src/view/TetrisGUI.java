@@ -286,10 +286,10 @@ public final class TetrisGUI extends JPanel {
      * Displays the high scores using a dialog box.
      */
     private void displayHighScores() {
-        final HighScoreManager manager = new HighScoreManager();
+        final HighScoreManagerInterface manager = new HighScoreManager();
         final StringBuilder highScoresText = new StringBuilder(HIGH_SCORES);
 
-        for (final HighScore hs : manager.getHighScores()) {
+        for (final HighScoreInterface hs : manager.getHighScores()) {
             highScoresText.append(hs).append("\n");
         }
 
@@ -320,7 +320,7 @@ public final class TetrisGUI extends JPanel {
         );
 
         if (confirmation == JOptionPane.YES_OPTION) {
-            final HighScoreManager manager = new HighScoreManager();
+            final HighScoreManagerInterface manager = new HighScoreManager();
             manager.clearHighScores();
             JOptionPane.showMessageDialog(
                     myFrame,
@@ -573,7 +573,7 @@ public final class TetrisGUI extends JPanel {
             );
 
             if (playerName != null && !playerName.isEmpty()) {
-                final HighScoreManager manager = new HighScoreManager();
+                final HighScoreManagerInterface manager = new HighScoreManager();
                 manager.addHighScore(new HighScore(playerName, myScoreSystem.getScore()));
             }
         }

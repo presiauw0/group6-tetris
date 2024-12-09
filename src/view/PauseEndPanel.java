@@ -72,6 +72,10 @@ public final class PauseEndPanel extends JPanel implements IPauseEndPanel {
     }
 
 
+    /**
+     * A helper method that determines what string to pass when the panel is displayed.
+     * @return A string holding the message to display based on Game state.
+     */
     private String getGameState() {
         final String result;
         if (myGameOver) {

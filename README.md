@@ -56,11 +56,12 @@ Location of scoring algorithm -
 - Toggle Music ON/OFF - Added an option in the game’s settings menu that allows players to toggle the background music on and off directly through the interface. This feature provides an additional, user-friendly way to control the music alongside the M key functionality.
 - Hard Mode - An option to enter "Hard Mode". This disables the grid Lines and Ghost Piece. It also limits the number of times a user can Rotate a piece to 4 times (achieving a full piece rotation).
 
+### Sources/Citations
+Music
+ - "Tetris - A Theme", https://bitmidi.com/tetris-a-theme-mid
 
-
-
-
-
-
+Resources:
+ - "Multiline text in JLabel", https://stackoverflow.com/questions/685521/multiline-text-in-jlabel
+ - "How to build JARs from IntelliJ IDEA properly?", https://stackoverflow.com/questions/1082580/how-to-build-jars-from-intellij-idea-properly
 
   
